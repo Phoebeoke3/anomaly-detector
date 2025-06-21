@@ -155,7 +155,7 @@ python -m src.data.simulator
 4. Access the dashboard:
 Open your web browser and navigate to `http://localhost:5000`
 
-## Troubleshooting
+<!-- #,# Troubleshooting
 
 - **Blank charts?**
   - Make sure the simulator is running and sending data.
@@ -163,7 +163,7 @@ Open your web browser and navigate to `http://localhost:5000`
     - If `count` is 0, the database is empty. Check the simulator output for errors.
   - The simulator and API must use the `sound_level` field (not `sound`).
   - If you see `Error sending data: 400` in the simulator, check that the field names match the API requirements.
-  - Ensure Chart.js can access the canvas elements (check browser console for errors).
+  - Ensure Chart.js can access the canvas elements (check browser console for errors). -->
 
 ## Debug Endpoints
 
