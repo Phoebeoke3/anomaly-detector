@@ -1,0 +1,15 @@
+{
+    "model_version": "20250524_140851",
+    "training_date": "2025-05-24T14:08:52.154304",
+    "metrics": {
+        "precision": 1.0,
+        "recall": 0.03076923076923077,
+        "f1_score": 0.059701492537313446,
+        "accuracy": 0.03076923076923077,
+        "threshold": 0.5223292922244219,
+        "mean_anomaly_score": 0.44269500771815196,
+        "std_anomaly_score": 0.05954646166160212,
+        "max_anomaly_score": 0.715665735490615,
+        "min_anomaly_score": 0.3770277158590471
+    }
+}

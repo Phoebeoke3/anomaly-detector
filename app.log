@@ -1,0 +1,245 @@
+2025-05-24 14:01:22,712 - __main__ - INFO - Model loaded successfully
+2025-05-24 14:01:22,768 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-05-24 14:01:22,768 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-05-24 14:01:22,778 - werkzeug - INFO -  * Restarting with stat
+2025-05-24 14:01:27,125 - __main__ - INFO - Model loaded successfully
+2025-05-24 14:01:27,165 - werkzeug - WARNING -  * Debugger is active!
+2025-05-24 14:01:27,171 - werkzeug - INFO -  * Debugger PIN: 311-248-961
+2025-05-24 14:01:37,493 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:01:37] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:01:37,647 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:01:37] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:01:37,980 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:01:37] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:01:38,384 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:01:38] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:01:43,284 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:01:43] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:01:43,386 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:01:43] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:01:47,977 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:01:47] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:01:48,395 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:01:48] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:01:53,283 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:01:53] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:01:53,382 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:01:53] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:01:57,971 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:01:57] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:01:58,369 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:01:58] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:02:03,275 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:03] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:02:03,404 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:03] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:02:07,976 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:07] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:02:08,381 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:08] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:02:13,286 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:13] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:02:13,375 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:13] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:02:17,968 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:17] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:02:18,353 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:18] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:02:23,280 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:23] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:02:23,397 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:23] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:02:28,568 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:28] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:02:28,992 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:28] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:02:33,878 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:33] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:02:34,046 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:34] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:02:38,562 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:38] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:02:38,934 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:38] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:02:43,865 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:43] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:02:43,959 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:43] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:02:48,558 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:48] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:02:48,964 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:48] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:02:53,869 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:53] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:02:53,995 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:53] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:02:58,561 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:58] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:02:58,981 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:02:58] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:03:03,276 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:03] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:03:03,396 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:03] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:03:07,976 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:07] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:03:08,373 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:08] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:03:13,291 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:13] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:03:13,391 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:13] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:03:17,986 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:17] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:03:18,486 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:18] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:03:23,283 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:23] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:03:23,333 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:23] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:03:27,973 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:27] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:03:28,326 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:28] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:03:33,277 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:33] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:03:33,323 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:33] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:03:37,966 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:37] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:03:38,307 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:38] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:03:43,277 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:43] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:03:43,331 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:43] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:03:47,977 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:47] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:03:48,320 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:48] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:03:53,294 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:53] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:03:53,341 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:53] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:03:57,963 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:57] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:03:58,317 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:03:58] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:04:03,275 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:03] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:04:03,330 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:03] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:04:07,977 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:07] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:04:08,316 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:08] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:04:13,287 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:13] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:04:13,339 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:13] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:04:17,974 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:17] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:04:18,328 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:18] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:04:23,277 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:23] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:04:23,331 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:23] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:04:27,971 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:27] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:04:28,308 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:28] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:04:33,286 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:33] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:04:33,334 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:33] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:04:37,970 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:37] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:04:38,307 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:38] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:04:43,290 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:43] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:04:43,345 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:43] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:04:47,977 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:47] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:04:48,321 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:48] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:04:53,274 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:53] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:04:53,327 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:53] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:04:57,963 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:57] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:04:58,309 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:04:58] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:05:03,272 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:03] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:05:03,326 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:03] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:05:07,970 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:07] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:05:08,313 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:08] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:05:13,280 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:13] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:05:13,336 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:13] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:05:17,977 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:17] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:05:18,313 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:18] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:05:23,276 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:23] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:05:23,326 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:23] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:05:27,980 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:27] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:05:28,311 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:28] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:05:33,274 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:33] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:05:33,317 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:33] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:05:37,966 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:37] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:05:38,309 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:38] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:05:43,288 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:43] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:05:43,342 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:43] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:05:47,966 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:47] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:05:48,305 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:48] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:05:53,288 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:53] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:05:53,340 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:53] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:05:57,968 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:57] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:05:58,318 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:05:58] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:06:03,878 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:03] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:06:03,941 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:03] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:06:08,563 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:08] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:06:08,905 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:08] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:06:13,873 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:13] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:06:13,920 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:13] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:06:18,566 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:18] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:06:18,933 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:18] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:06:23,871 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:23] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:06:23,922 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:23] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:06:28,561 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:28] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:06:28,901 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:28] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:06:33,870 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:33] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:06:33,919 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:33] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:06:38,566 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:38] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:06:38,921 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:38] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:06:43,875 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:43] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:06:43,925 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:43] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:06:48,570 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:48] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:06:48,915 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:48] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:06:53,875 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:53] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:06:53,923 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:53] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:06:58,565 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:58] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:06:58,917 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:06:58] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:07:12,332 - werkzeug - INFO -  * Detected change in 'C:\\Users\\User\\Desktop\\Anomaly detection\\src\\model\\train.py', reloading
+2025-05-24 14:07:12,539 - werkzeug - INFO -  * Restarting with stat
+2025-05-24 14:07:14,941 - __main__ - INFO - Model loaded successfully
+2025-05-24 14:07:14,949 - werkzeug - WARNING -  * Debugger is active!
+2025-05-24 14:07:14,963 - werkzeug - INFO -  * Debugger PIN: 311-248-961
+2025-05-24 14:07:15,002 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:07:15] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:07:15,051 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:07:15] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:08:14,553 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:08:14] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:08:14,906 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:08:14] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:09:04,683 - __main__ - INFO - Model loaded successfully
+2025-05-24 14:09:04,741 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-05-24 14:09:04,741 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-05-24 14:09:04,748 - werkzeug - INFO -  * Restarting with stat
+2025-05-24 14:09:06,995 - __main__ - INFO - Model loaded successfully
+2025-05-24 14:09:07,012 - werkzeug - WARNING -  * Debugger is active!
+2025-05-24 14:09:07,026 - werkzeug - INFO -  * Debugger PIN: 311-248-961
+2025-05-24 14:09:07,860 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:07] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:09:07,906 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:07] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:09:08,113 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:08] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:09:08,322 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:08] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:09:11,095 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:11] "GET / HTTP/1.1" 200 -
+2025-05-24 14:09:11,386 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:11] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:09:11,477 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:11] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:09:16,459 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:16] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:09:16,510 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:16] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:09:21,146 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:21] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:09:21,499 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:21] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:09:26,463 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:26] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:09:26,516 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:26] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:09:31,154 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:31] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:09:31,497 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:31] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:09:36,457 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:36] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:09:36,513 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:36] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:09:41,138 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:41] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:09:41,531 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:41] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:09:46,882 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:46] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:09:46,929 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:46] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:09:51,566 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:51] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:09:51,915 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:51] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:09:56,864 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:56] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:09:56,911 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:09:56] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:10:01,552 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:10:01] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:10:01,892 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:10:01] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:10:06,873 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:10:06] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:10:06,916 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:10:06] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:10:11,552 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:10:11] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:10:11,921 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:10:11] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:10:16,874 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:10:16] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:10:16,928 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:10:16] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:10:21,563 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:10:21] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:10:21,915 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:10:21] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:10:26,866 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:10:26] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:10:26,911 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:10:26] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:10:31,559 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:10:31] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:10:31,896 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:10:31] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:10:36,880 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:10:36] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:10:36,927 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:10:36] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:10:41,574 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:10:41] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:10:41,917 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:10:41] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:11:14,861 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:11:14] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:11:14,909 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:11:14] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:12:14,562 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:12:14] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:12:14,930 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:12:14] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:13:14,873 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:13:14] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:13:14,904 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:13:14] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:14:14,559 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:14:14] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:14:14,898 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:14:14] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:14:57,567 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:14:57] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:14:57,638 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:14:57] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:15:01,561 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:01] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:15:01,896 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:01] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:15:06,878 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:06] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:15:06,931 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:06] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:15:11,567 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:11] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:15:11,928 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:11] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:15:16,870 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:16] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:15:16,937 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:16] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:15:21,554 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:21] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:15:21,927 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:21] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:15:26,873 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:26] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:15:26,921 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:26] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:15:31,563 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:31] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:15:31,932 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:31] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:15:36,870 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:36] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:15:36,917 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:36] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:15:41,559 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:41] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:15:41,903 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:41] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:15:46,873 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:46] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:15:46,918 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:46] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:15:51,560 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:51] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:15:51,909 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:51] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:15:56,861 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:56] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:15:56,909 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:15:56] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:16:14,555 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:16:14] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:16:14,915 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:16:14] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:17:14,869 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:17:14] "GET /api/current-status HTTP/1.1" 200 -
+2025-05-24 14:17:14,945 - werkzeug - INFO - 127.0.0.1 - - [24/May/2025 14:17:14] "GET /api/production-lines HTTP/1.1" 200 -
+2025-05-24 14:17:15,322 - werkzeug - INFO -  * Detected change in 'C:\\Users\\User\\Desktop\\Anomaly detection\\src\\data\\cassandra_db.py', reloading
+2025-05-24 14:17:15,556 - werkzeug - INFO -  * Restarting with stat
+2025-05-24 14:17:18,751 - __main__ - INFO - Model loaded successfully
+2025-05-24 14:17:18,775 - werkzeug - WARNING -  * Debugger is active!
+2025-05-24 14:17:18,778 - werkzeug - INFO -  * Debugger PIN: 311-248-961
+2025-05-24 14:17:29,281 - werkzeug - INFO -  * Detected change in 'C:\\Users\\User\\Desktop\\Anomaly detection\\src\\model\\train.py', reloading
+2025-05-24 14:17:29,505 - werkzeug - INFO -  * Restarting with stat
