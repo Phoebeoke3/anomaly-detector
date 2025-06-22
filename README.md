@@ -5,24 +5,26 @@ A real-time anomaly detection system for wind turbine component manufacturing fa
 ## System Architecture
 
 ```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  Data Ingestion │     │  Data Processing│     │  Model Service  │
-│  Layer          │────▶│  Layer          │────▶│  Layer          │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-        │                       │                        │
-        │                       │                        │
-        ▼                       ▼                        ▼
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  Sensor Data    │     │  Feature        │     │  REST API       │
-│  Generator      │     │  Engineering    │     │  Endpoints      │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-                                                         │
-                                                         │
-                                                         ▼
-                                                ┌─────────────────┐
-                                                │  Dashboard      │
-                                                │  UI             │
-                                                └─────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           ANOMALY DETECTION SYSTEM                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   DATA SOURCES  │    │  DATA INGESTION │    │  DATA STORAGE   │    │  ML PROCESSING  │
+│                 │    │                 │    │                 │    │                 │
+│ • IoT Sensors   │───▶│ • Validation    │───▶│ • SQLite DB     │───▶│ • Isolation     │
+│ • Simulator     │    │ • Cleaning      │    │ • CSV Cache     │    │   Forest        │
+│ • Kaggle Data   │    │ • Processing    │    │ • Model Files   │    │ • Feature Eng.  │
+└─────────────────┘    └─────────────────┘    └─────────────────┘    └─────────────────┘
+                                                                              │
+                                                                              ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   DASHBOARD     │◀───│   API LAYER     │◀───│  PREDICTION     │◀───│  MODEL SERVICE  │
+│                 │    │                 │    │                 │    │                 │
+│ • HTML/CSS/JS   │    │ • Flask Server  │    │ • Real-time     │    │ • Model Loading │
+│ • Chart.js      │    │ • REST API      │    │   Scoring       │    │ • Versioning    │
+│ • Bootstrap     │    │ • Endpoints     │    │ • Anomaly Alerts│    │ • Persistence   │
+└─────────────────┘    └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
 ### Component Details
@@ -258,3 +260,13 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Support
 
 For support, please open an issue in the repository or contact the development team.
+
+Python 3.7+
+├── Flask>=2.0.1          # Web framework
+├── numpy>=1.21.0         # Numerical computing
+├── pandas>=1.3.0         # Data manipulation
+├── scikit-learn>=0.24.2  # Machine learning
+├── joblib>=1.0.1         # Model persistence
+├── requests>=2.25.1      # HTTP client
+├── python-dotenv>=0.19.0 # Environment management
+└── kaggle>=1.7.4.5       # Kaggle API
