@@ -20,4 +20,4 @@ if __name__ == "__main__":
     print("Press Ctrl+C to stop the server")
     
     app = DashboardController().create_app()
-    app.run(debug=True, port=5001, host='0.0.0.0') 
+    app.run(host="0.0.0.0", port=5001, debug=False, use_reloader=False) 

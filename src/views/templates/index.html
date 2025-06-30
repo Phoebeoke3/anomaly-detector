@@ -1,3 +1,4 @@
+<!-- TEST-UNIQUE-12345 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -305,6 +306,7 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
+            console.log('[DEBUG] Dashboard JS loaded');
             // Debug info
             document.getElementById('debug-time').textContent = new Date().toLocaleString();
             console.log('Dashboard loaded successfully');
@@ -378,19 +380,14 @@
             }
 
             // Function to check for anomalies and trigger beep
-            function checkForAnomalies(data) {
-                if (!data || !data.production_lines) return;
-                
-                let hasAnomaly = false;
-                for (const line of data.production_lines) {
-                    if (line.anomaly_score > line.threshold) {
-                        hasAnomaly = true;
+            function checkForAnomalies(linesObj) {
+                console.log('[DEBUG] checkForAnomalies called with:', linesObj);
+                if (!linesObj || typeof linesObj !== 'object') return;
+                for (const line of Object.values(linesObj)) {
+                    if (line.anomaly_score && line.threshold && line.anomaly_score > line.threshold) {
+                        playBeep();
                         break;
                     }
-                }
-                
-                if (hasAnomaly) {
-                    playBeep();
                 }
             }
 
@@ -545,23 +542,6 @@
                 return 'anomaly-normal';
             }
 
-            // Update system statistics
-            function updateSystemStats(data) {
-                const lines = Object.values(data);
-                const normal = lines.filter(line => line.status === 'normal').length;
-                const warning = lines.filter(line => line.status === 'warning').length;
-                const critical = lines.filter(line => line.status === 'critical').length;
-                
-                document.getElementById('total-lines').textContent = lines.length;
-                document.getElementById('normal-lines').textContent = normal;
-                document.getElementById('warning-lines').textContent = warning;
-                document.getElementById('critical-lines').textContent = critical;
-                
-                // Update debug information
-                const anomalyScores = lines.map(line => `${line.name}: ${line.anomaly_score.toFixed(3)}`).join(', ');
-                document.getElementById('anomaly-scores').textContent = anomalyScores;
-            }
-
             // Fetch and plot historical data for a sensor
             function fetchAndPlotHistory(sensorType, chart) {
                 const timestamp = new Date().getTime();
@@ -642,40 +622,55 @@
 
                 // Get current sensor data and status
                 fetch(`/api/current-status?_t=${timestamp}`)
-                    .then(response => response.json())
+                    .then(response => {
+                        console.log('[DEBUG] Raw response:', response);
+                        return response.json().catch(err => {
+                            console.error('[ERROR] Parsing JSON:', err);
+                            return undefined;
+                        });
+                    })
                     .then(data => {
-                        if (data.status === 'ok') {
-                            updateSystemStatus(data);
-                            checkForAnomalies(data);
-                            
-                            // Send latest sensor data for prediction if available
-                            if (data.recent_data && data.recent_data.length > 0) {
-                                const latestData = data.recent_data[0];
-                                sendSensorData({
-                                    temperature: latestData.temperature,
-                                    humidity: latestData.humidity,
-                                    sound_level: latestData.sound,
-                                    production_line: latestData.production_line,
-                                    timestamp: latestData.timestamp
-                                });
-                            }
+                        console.log('[DEBUG] /api/current-status response:', data);
+                        updateSystemStatus(data);
+                        if (data && data.production_lines && typeof data.production_lines === 'object' && Object.keys(data.production_lines).length > 0) {
+                            console.log('[DEBUG] About to call checkForAnomalies with:', data.production_lines);
+                            checkForAnomalies(data.production_lines);
+                            console.log('[DEBUG] About to call updateSystemStats with:', data.production_lines);
+                            updateSystemStats(data.production_lines);
+                        }
+                        if (data && data.recent_data && Array.isArray(data.recent_data) && data.recent_data.length > 0) {
+                            const latestData = data.recent_data[0];
+                            sendSensorData({
+                                temperature: latestData.temperature,
+                                humidity: latestData.humidity,
+                                sound_level: latestData.sound,
+                                production_line: latestData.production_line,
+                                timestamp: latestData.timestamp
+                            });
                         }
                     })
-                    .catch(error => {
-                        console.error('Error fetching system status:', error);
+                    .catch(err => {
+                        console.error('Error fetching system status:', err);
                     });
 
                 // Update production lines
                 fetch(`/api/production-lines?_t=${timestamp}`)
                     .then(response => response.json())
                     .then(data => {
+                        console.log('[DEBUG] /api/production-lines response:', data);
+                        if (data && typeof data === 'object' && Object.keys(data).length > 0) {
+                            updateAnomalyTrend(data);
+                        } else {
+                            console.warn('[DEBUG] Skipping updateAnomalyTrend: invalid data', data);
+                        }
                         const container = document.getElementById('production-lines');
                         container.innerHTML = '';
                         
                         // Fallback for empty data
                         if (!data || Object.keys(data).length === 0) {
+                            console.log('[DEBUG] Production lines data is empty:', data);
                             container.innerHTML = '<div class="col-12 text-center text-muted"><i class="bx bx-error"></i> No production line data available.</div>';
-                            updateSystemStats({});
+                            // Do not call updateSystemStats here
                             return;
                         }
                         
@@ -738,14 +733,14 @@
                                 updateChart(charts.humidity, avgHumidity);
                                 updateChart(charts.sound, avgSound);
                             }
-                            updateAnomalyTrend(avgAnomaly);
+                            updateAnomalyTrend(data);
                         }
                         
                         // Update system statistics
                         updateSystemStats(data);
                     })
-                    .catch(error => {
-                        console.error('Error fetching production lines:', error);
+                    .catch(err => {
+                        console.error('Error fetching production lines:', err);
                     });
             }
 
@@ -769,47 +764,114 @@
             
             console.log('Dashboard update cycle started');
 
-            // Enhance anomaly trend chart
-            function updateAnomalyTrend(score) {
-                const now = new Date();
-                const timeStr = now.toLocaleTimeString();
-                
-                charts.anomalyTrend.data.labels.push(timeStr);
-                charts.anomalyTrend.data.datasets[0].data.push(score);
-                
-                // Keep last 30 points for better trend visibility
-                if (charts.anomalyTrend.data.labels.length > 30) {
-                    charts.anomalyTrend.data.labels.shift();
-                    charts.anomalyTrend.data.datasets[0].data.shift();
+            // Check for anomalies function
+            function checkForAnomalies(productionLines) {
+                console.log('[DEBUG] checkForAnomalies called with:', productionLines);
+                if (!productionLines || typeof productionLines !== 'object') {
+                    return;
                 }
                 
-                // Update chart options for better visualization
-                charts.anomalyTrend.options.scales.y.grid.color = (context) => {
-                    if (context.tick.value === 0.6) return 'rgba(255, 193, 7, 0.5)';  // Warning threshold
-                    if (context.tick.value === 0.8) return 'rgba(220, 53, 69, 0.5)';  // Critical threshold
-                    return 'rgba(0, 0, 0, 0.1)';
-                };
+                const lines = Object.values(productionLines);
+                let hasAnomaly = false;
                 
-                charts.anomalyTrend.update('none');
+                for (const line of lines) {
+                    if (line.anomaly_score && line.anomaly_score >= 0.6) {
+                        hasAnomaly = true;
+                        console.log(`[WARNING] Anomaly detected in ${line.name}: ${line.anomaly_score.toFixed(3)}`);
+                        break;
+                    }
+                }
                 
-                // Check if should play alert
-                if (score >= 0.6) {
+                if (hasAnomaly) {
                     playBeep();
                 }
             }
 
+            // Update system statistics function
+            function updateSystemStats(productionLines) {
+                console.log('[DEBUG] updateSystemStats called with:', productionLines);
+                if (!productionLines || typeof productionLines !== 'object') {
+                    console.warn('[WARN] updateSystemStats early return: productionLines is', productionLines, 'typeof:', typeof productionLines);
+                    return;
+                }
+                
+                const lines = Object.values(productionLines);
+                if (lines.length === 0) {
+                    console.warn('[WARN] No production lines found');
+                    return;
+                }
+                
+                // Calculate statistics
+                const totalLines = lines.length;
+                const normalLines = lines.filter(line => line.anomaly_score < 0.6).length;
+                const warningLines = lines.filter(line => line.anomaly_score >= 0.6 && line.anomaly_score < 0.8).length;
+                const criticalLines = lines.filter(line => line.anomaly_score >= 0.8).length;
+                const avgAnomalyScore = lines.reduce((sum, line) => sum + (line.anomaly_score || 0), 0) / lines.length;
+                
+                // Update DOM elements
+                const totalLinesElement = document.getElementById('total-lines');
+                const normalLinesElement = document.getElementById('normal-lines');
+                const warningLinesElement = document.getElementById('warning-lines');
+                const criticalLinesElement = document.getElementById('critical-lines');
+                const anomalyScoresElement = document.getElementById('anomaly-scores');
+                
+                if (totalLinesElement) totalLinesElement.textContent = totalLines;
+                if (normalLinesElement) normalLinesElement.textContent = normalLines;
+                if (warningLinesElement) warningLinesElement.textContent = warningLines;
+                if (criticalLinesElement) criticalLinesElement.textContent = criticalLines;
+                if (anomalyScoresElement) anomalyScoresElement.textContent = avgAnomalyScore.toFixed(3);
+                
+                console.log('[DEBUG] System stats updated:', {
+                    total: totalLines,
+                    normal: normalLines,
+                    warning: warningLines,
+                    critical: criticalLines,
+                    avgAnomaly: avgAnomalyScore.toFixed(3)
+                });
+            }
+
+            // Enhance anomaly trend chart
+            function updateAnomalyTrend(linesObj) {
+                console.log('[DEBUG] updateAnomalyTrend called with:', linesObj);
+                if (!linesObj || typeof linesObj !== 'object') return;
+                const lines = Object.values(linesObj);
+                if (lines.length === 0) return;
+                const avgAnomaly = lines.reduce((sum, l) => sum + (l.anomaly_score || 0), 0) / lines.length;
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString();
+                charts.anomalyTrend.data.labels.push(timeStr);
+                charts.anomalyTrend.data.datasets[0].data.push(avgAnomaly);
+                if (charts.anomalyTrend.data.labels.length > 30) {
+                    charts.anomalyTrend.data.labels.shift();
+                    charts.anomalyTrend.data.datasets[0].data.shift();
+                }
+                charts.anomalyTrend.update();
+                if (avgAnomaly >= 0.6) {
+                    playBeep();
+                }
+                console.log('[DEBUG] Average anomaly score:', avgAnomaly);
+            }
+
             // Update system status function
             function updateSystemStatus(data) {
+                console.log('[DEBUG] updateSystemStatus called with:', data);
                 const systemStatus = document.getElementById('system-status');
-                const modelStatus = data.model_status || { status: 'Unknown', version: 'Unknown' };
+                // Always clear the container
+                systemStatus.innerHTML = '';
+                if (!data || typeof data !== 'object') {
+                    systemStatus.innerHTML = '<p class="text-danger">No status data available.</p>';
+                    return;
+                }
+                const modelStatus = data.model_status || {};
                 const healthStatus = data.health_status || { status: 'Unknown' };
-                
-                // Clear loading state
-                systemStatus.innerHTML = `
+                // Compose status and version from available fields
+                const statusText = modelStatus.model_loaded ? 'Active' : 'Not Loaded';
+                const versionText = modelStatus.model_type || 'Unknown';
+                const html = `
                     <div class="status-item">
                         <strong>Model Status:</strong>
-                        <span class="status-value ${modelStatus.status === 'Active' ? 'status-good' : 'status-warning'}">
-                            ${modelStatus.status}
+                        <span class="status-value ${modelStatus.model_loaded ? 'status-good' : 'status-warning'}">
+                            ${statusText}
                         </span>
                     </div>
                     <div class="status-item">
@@ -820,15 +882,16 @@
                     </div>
                     <div class="status-item">
                         <strong>Model Version:</strong>
-                        <span class="status-value">${modelStatus.version}</span>
+                        <span class="status-value">${versionText}</span>
                     </div>
                 `;
-                
-                // Update last update time
-                document.getElementById('last-update').textContent = 
+                systemStatus.innerHTML = html;
+                console.log('[DEBUG] updateSystemStatus HTML:', html);
+                document.getElementById('last-update').textContent =
                     `Last updated: ${new Date().toLocaleTimeString()}`;
             }
         </script>
     </div>
+    <pre id="debug-api-data" style="background:#f8f9fa; color:#333; padding:10px; border:1px solid #ccc; margin:20px 0;"></pre>
 </body>
 </html> 

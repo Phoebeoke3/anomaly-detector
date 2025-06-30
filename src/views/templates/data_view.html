@@ -298,6 +298,7 @@
         // Load database statistics on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadDatabaseStats();
+            setInterval(loadDatabaseStats, 5000); // Update stats every 5 seconds
         });
 
         // Show table selector section
