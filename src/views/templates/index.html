@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Anomaly Detection Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet">
+    <style>
+        .status-card {
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+        .status-normal { 
+            background-color: #d4edda;
+            border-left: 5px solid #28a745;
+        }
+        .status-warning { 
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+        }
+        .status-critical { 
+            background-color: #f8d7da;
+            border-left: 5px solid #dc3545;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .chart-container {
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        .large-chart-container {
+            height: 400px;
+            margin-bottom: 20px;
+        }
+        .refresh-time {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        .anomaly-score {
+            font-size: 14px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+        .anomaly-normal {
+            background-color: #28a745;
+            color: white;
+        }
+        .anomaly-warning {
+            background-color: #ffc107;
+            color: black;
+        }
+        .anomaly-critical {
+            background-color: #dc3545;
+            color: white;
+        }
+        .gauge-container {
+            text-align: center;
+            margin: 10px 0;
+        }
+        .gauge {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+            background: conic-gradient(#28a745 0deg, #28a745 180deg, #ffc107 180deg, #ffc107 270deg, #dc3545 270deg, #dc3545 360deg);
+        }
+        .gauge::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70px;
+            height: 70px;
+            background: white;
+            border-radius: 50%;
+        }
+        .gauge-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        .debug-info {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 12px;
+            color: #6c757d;
+        }
+        /* Make data view buttons more visible */
+        .btn-outline-light {
+            color: #fff;
+            border-color: #fff;
+            font-weight: 500;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        .btn-outline-light:hover {
+            background-color: #fff;
+            color: #343a40;
+            border-color: #fff;
+        }
+        .btn-outline-light.active {
+            background-color: #fff;
+            color: #343a40;
+            border-color: #fff;
+            font-weight: 600;
+        }
+        
+        /* System status styles */
+        #system-status {
+            min-height: 120px;
+        }
+        .status-item {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+        }
+        .status-item strong {
+            display: inline-block;
+            min-width: 120px;
+            color: #495057;
+        }
+        .status-value {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+        .status-good {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">{{ company.name }} - Wind Turbine Anomaly Detection Dashboard</span>
+            <div class="d-flex align-items-center">
+                <span class="text-light me-3">{{ company.facility }}</span>
+                <div class="btn-group me-2" role="group">
+                    <a href="/" class="btn btn-outline-light btn-sm active">
+                        <i class="bx bx-home"></i> Dashboard
+                    </a>
+                    <a href="/data-view" class="btn btn-outline-light btn-sm">
+                        <i class="bx bx-data"></i> View Data
+                    </a>
+                </div>
+                <div class="btn-group" role="group">
+                    <button class="btn btn-outline-info btn-sm" onclick="refreshAllData()">
+                        <i class="bx bx-refresh"></i> Refresh
+                    </button>
+                    <a class="btn btn-outline-primary btn-sm ms-2" href="/predictions">
+                        <i class="bx bx-table"></i> View Predictions
+                    </a>
+                    <button id="mute-btn" class="btn btn-outline-warning btn-sm ms-2" onclick="toggleMute()" title="Mute/Unmute Sound Alert">
+                        <i id="mute-icon" class="bx bx-volume-full"></i> <span id="mute-label">Mute</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        {% block content %}
+        <!-- Debug Info -->
+        <div class="debug-info">
+            <strong>Last Updated:</strong> <span id="debug-time"></span>
+            <br>
+            <strong>Thresholds:</strong> Warning: <span id="warning-threshold">--</span> | Critical: <span id="critical-threshold">--</span>
+            <br>
+            <strong>Current Anomaly Scores:</strong> <span id="anomaly-scores">--</span>
+        </div>
+
+        <!-- System Overview -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="status-card">
+                    <h5>System Status</h5>
+                    <div id="system-status">
+                        <p>Loading...</p>
+                    </div>
+                    <div class="refresh-time" id="last-update"></div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="status-card">
+                    <h5>System Statistics</h5>
+                    <div class="stats-grid" id="system-stats">
+                        <div class="stat-card">
+                            <div class="stat-value" id="total-lines">0</div>
+                            <div class="stat-label">Turbine Lines</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="normal-lines">0</div>
+                            <div class="stat-label">Normal</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="warning-lines">0</div>
+                            <div class="stat-label">Warning</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="critical-lines">0</div>
+                            <div class="stat-label">Critical</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Production Lines -->
+        <div class="row">
+            <div class="col-12">
+                <div class="status-card">
+                    <h5>Turbine Lines Status</h5>
+                    <div class="row" id="production-lines">
+                        <!-- Production lines will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Sensor Charts -->
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="status-card">
+                    <h5>Blade Temperature Trends</h5>
+                    <div class="chart-container">
+                        <canvas id="temperature-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="status-card">
+                    <h5>Blade Humidity Trends</h5>
+                    <div class="chart-container">
+                        <canvas id="humidity-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="status-card">
+                    <h5>Blade Sound Level Trends</h5>
+                    <div class="chart-container">
+                        <canvas id="sound-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+
+        <!-- Add audio element for alerts -->
+        <audio id="anomaly-alert" preload="auto">
+            <source src="https://cdn.freesound.org/previews/250/250629_4486188-lq.mp3" type="audio/mpeg">
+        </audio>
+
+        <!-- Scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            // Debug info
+            document.getElementById('debug-time').textContent = new Date().toLocaleString();
+            console.log('Dashboard loaded successfully');
+
+            // Global data storage
+            let historicalData = {
+                temperature: [],
+                humidity: [],
+                sound: [],
+                anomaly_scores: [],
+                timestamps: []
+            };
+            let chartsLoaded = false;
+            let charts = {};
+
+            // Beep sound configuration
+            let audioContext = null;
+            const BEEP_FREQUENCY = 830;  // Hz
+            const BEEP_DURATION = 200;   // ms
+            const ALERT_COOLDOWN = 5000; // 5 seconds between beeps
+            let lastBeepTime = 0;
+            let isMuted = false;
+
+            function initAudioContext() {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            }
+
+            function playBeep() {
+                const now = Date.now();
+                if (now - lastBeepTime < ALERT_COOLDOWN) {
+                    return;  // Still in cooldown
+                }
+                if (isMuted) {
+                    return; // Do not play sound if muted
+                }
+                
+                initAudioContext();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.value = BEEP_FREQUENCY;
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime); // Lower volume
+                
+                oscillator.start();
+                setTimeout(() => {
+                    oscillator.stop();
+                }, BEEP_DURATION);
+                
+                lastBeepTime = now;
+            }
+
+            // Mute/unmute toggle logic
+            function toggleMute() {
+                isMuted = !isMuted;
+                const icon = document.getElementById('mute-icon');
+                const label = document.getElementById('mute-label');
+                if (isMuted) {
+                    icon.className = 'bx bx-volume-mute';
+                    label.textContent = 'Unmute';
+                } else {
+                    icon.className = 'bx bx-volume-full';
+                    label.textContent = 'Mute';
+                }
+            }
+
+            // Function to check for anomalies and trigger beep
+            function checkForAnomalies(data) {
+                if (!data || !data.production_lines) return;
+                
+                let hasAnomaly = false;
+                for (const line of data.production_lines) {
+                    if (line.anomaly_score > line.threshold) {
+                        hasAnomaly = true;
+                        break;
+                    }
+                }
+                
+                if (hasAnomaly) {
+                    playBeep();
+                }
+            }
+
+            // Initialize charts after DOM is loaded
+            document.addEventListener('DOMContentLoaded', function() {
+                // Initialize charts
+                charts = {
+                    temperature: new Chart(document.getElementById('temperature-chart'), {
+                        type: 'line',
+                        data: {
+                            labels: [],
+                            datasets: [{
+                                label: 'Temperature (°C)',
+                                data: [],
+                                borderColor: 'rgb(75, 192, 192)',
+                                backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                                tension: 0.1,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: true
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: false,
+                                    suggestedMin: 15,
+                                    suggestedMax: 35,
+                                    title: {
+                                        display: true,
+                                        text: 'Temperature (°C)'
+                                    }
+                                }
+                            }
+                        }
+                    }),
+                    humidity: new Chart(document.getElementById('humidity-chart'), {
+                        type: 'line',
+                        data: {
+                            labels: [],
+                            datasets: [{
+                                label: 'Humidity (%)',
+                                data: [],
+                                borderColor: 'rgb(153, 102, 255)',
+                                backgroundColor: 'rgba(153, 102, 255, 0.1)',
+                                tension: 0.1,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: true
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: false,
+                                    suggestedMin: 30,
+                                    suggestedMax: 70,
+                                    title: {
+                                        display: true,
+                                        text: 'Humidity (%)'
+                                    }
+                                }
+                            }
+                        }
+                    }),
+                    sound: new Chart(document.getElementById('sound-chart'), {
+                        type: 'line',
+                        data: {
+                            labels: [],
+                            datasets: [{
+                                label: 'Sound Level (dB)',
+                                data: [],
+                                borderColor: 'rgb(255, 99, 132)',
+                                backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                                tension: 0.1,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: true
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: false,
+                                    suggestedMin: 40,
+                                    suggestedMax: 80,
+                                    title: {
+                                        display: true,
+                                        text: 'Sound Level (dB)'
+                                    }
+                                }
+                            }
+                        }
+                    })
+                };
+
+                console.log('All charts initialized successfully');
+
+                // Show loading state and fetch historical data
+                showChartLoading();
+                fetchAndPlotHistory('temperature', charts.temperature);
+                fetchAndPlotHistory('humidity', charts.humidity);
+                fetchAndPlotHistory('sound_level', charts.sound);
+            });
+
+            // Update chart data
+            function updateChart(chart, newValue, maxPoints = 20) {
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString();
+                
+                chart.data.labels.push(timeStr);
+                chart.data.datasets[0].data.push(newValue);
+                
+                // Keep only the last maxPoints points
+                if (chart.data.labels.length > maxPoints) {
+                    chart.data.labels.shift();
+                    chart.data.datasets[0].data.shift();
+                }
+                
+                chart.update('none'); // Disable animations for real-time updates
+            }
+
+            // Get status class based on anomaly status
+            function getStatusClass(status) {
+                switch(status) {
+                    case 'normal': return 'status-normal';
+                    case 'warning': return 'status-warning';
+                    case 'critical': return 'status-critical';
+                    default: return 'status-normal';
+                }
+            }
+
+            // Get anomaly score class
+            function getAnomalyScoreClass(score) {
+                if (score >= 0.8) return 'anomaly-critical';
+                if (score >= 0.6) return 'anomaly-warning';
+                return 'anomaly-normal';
+            }
+
+            // Update system statistics
+            function updateSystemStats(data) {
+                const lines = Object.values(data);
+                const normal = lines.filter(line => line.status === 'normal').length;
+                const warning = lines.filter(line => line.status === 'warning').length;
+                const critical = lines.filter(line => line.status === 'critical').length;
+                
+                document.getElementById('total-lines').textContent = lines.length;
+                document.getElementById('normal-lines').textContent = normal;
+                document.getElementById('warning-lines').textContent = warning;
+                document.getElementById('critical-lines').textContent = critical;
+                
+                // Update debug information
+                const anomalyScores = lines.map(line => `${line.name}: ${line.anomaly_score.toFixed(3)}`).join(', ');
+                document.getElementById('anomaly-scores').textContent = anomalyScores;
+            }
+
+            // Fetch and plot historical data for a sensor
+            function fetchAndPlotHistory(sensorType, chart) {
+                const timestamp = new Date().getTime();
+                fetch(`/api/sensor-history/${sensorType}?_t=${timestamp}`)
+                    .then(response => response.json())
+                    .then(response => {
+                        if (response.status === 'ok' && response.data) {
+                            // Sort by timestamp ascending
+                            const sortedData = response.data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                            const labels = sortedData.map(d => new Date(d.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+                            const values = sortedData.map(d => d.value);
+                            
+                            chart.data.labels = labels;
+                            chart.data.datasets[0].data = values;
+                            chart.update();
+                            hideChartLoading();
+                        } else {
+                            console.error('Error fetching sensor history:', response);
+                            hideChartLoading();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching sensor history:', error);
+                        hideChartLoading();
+                    });
+            }
+
+            // Show loading state for charts
+            function showChartLoading() {
+                charts.temperature.data.labels = ['Loading...'];
+                charts.temperature.data.datasets[0].data = [null];
+                charts.temperature.update();
+                charts.humidity.data.labels = ['Loading...'];
+                charts.humidity.data.datasets[0].data = [null];
+                charts.humidity.update();
+                charts.sound.data.labels = ['Loading...'];
+                charts.sound.data.datasets[0].data = [null];
+                charts.sound.update();
+            }
+
+            // Hide loading state for charts
+            function hideChartLoading() {
+                chartsLoaded = true;
+            }
+
+            // Function to send sensor data for prediction
+            function sendSensorData(sensorData) {
+                fetch('/api/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(sensorData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.anomaly_score >= 0.6) {
+                        playBeep();
+                    }
+                })
+                .catch(error => console.error('Error sending sensor data:', error));
+            }
+
+            // Update dashboard data
+            function updateDashboard() {
+                const timestamp = new Date().getTime();
+                
+                // Fetch thresholds
+                fetch(`/api/thresholds?_t=${timestamp}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('warning-threshold').textContent = data.warning_threshold.toFixed(3);
+                        document.getElementById('critical-threshold').textContent = data.critical_threshold.toFixed(3);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching thresholds:', error);
+                    });
+
+                // Get current sensor data and status
+                fetch(`/api/current-status?_t=${timestamp}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'ok') {
+                            updateSystemStatus(data);
+                            checkForAnomalies(data);
+                            
+                            // Send latest sensor data for prediction if available
+                            if (data.recent_data && data.recent_data.length > 0) {
+                                const latestData = data.recent_data[0];
+                                sendSensorData({
+                                    temperature: latestData.temperature,
+                                    humidity: latestData.humidity,
+                                    sound_level: latestData.sound,
+                                    production_line: latestData.production_line,
+                                    timestamp: latestData.timestamp
+                                });
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching system status:', error);
+                    });
+
+                // Update production lines
+                fetch(`/api/production-lines?_t=${timestamp}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const container = document.getElementById('production-lines');
+                        container.innerHTML = '';
+                        
+                        // Fallback for empty data
+                        if (!data || Object.keys(data).length === 0) {
+                            container.innerHTML = '<div class="col-12 text-center text-muted"><i class="bx bx-error"></i> No production line data available.</div>';
+                            updateSystemStats({});
+                            return;
+                        }
+                        
+                        let avgTemp = 0, avgHumidity = 0, avgSound = 0, avgAnomaly = 0;
+                        let count = 0;
+                        
+                        Object.entries(data).forEach(([lineId, line]) => {
+                            const statusClass = getStatusClass(line.status);
+                            const anomalyScoreClass = getAnomalyScoreClass(line.anomaly_score);
+                            
+                            avgTemp += line.sensors.temperature;
+                            avgHumidity += line.sensors.humidity;
+                            avgSound += line.sensors.sound_level;
+                            avgAnomaly += line.anomaly_score;
+                            count++;
+                            
+                            const card = document.createElement('div');
+                            card.className = 'col-md-6 col-lg-4 mb-3';
+                            card.innerHTML = `
+                                <div class="status-card ${statusClass}">
+                                    <h5>${line.name}</h5>
+                                    <p><small>Components: ${line.components.join(', ')}</small></p>
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="metric-value" id="${lineId}-temp">--</div>
+                                            <small>Blade Temperature</small>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="metric-value" id="${lineId}-humidity">--</div>
+                                            <small>Blade Humidity</small>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="metric-value" id="${lineId}-sound">--</div>
+                                            <small>Blade Sound</small>
+                                        </div>
+                                    </div>
+                                    <div class="anomaly-score ${anomalyScoreClass}">
+                                        Anomaly Score: ${line.anomaly_score.toFixed(3)}
+                                    </div>
+                                </div>
+                            `;
+                            container.appendChild(card);
+
+                            // Update metric values
+                            document.getElementById(`${lineId}-temp`).textContent = line.sensors.temperature.toFixed(1) + '°C';
+                            document.getElementById(`${lineId}-humidity`).textContent = line.sensors.humidity.toFixed(1) + '%';
+                            document.getElementById(`${lineId}-sound`).textContent = line.sensors.sound_level.toFixed(1) + 'dB';
+                        });
+                        
+                        // Update averages
+                        if (count > 0) {
+                            avgTemp /= count;
+                            avgHumidity /= count;
+                            avgSound /= count;
+                            avgAnomaly /= count;
+                            
+                            // Only append new data if charts are loaded
+                            if (chartsLoaded) {
+                                updateChart(charts.temperature, avgTemp);
+                                updateChart(charts.humidity, avgHumidity);
+                                updateChart(charts.sound, avgSound);
+                            }
+                            updateAnomalyTrend(avgAnomaly);
+                        }
+                        
+                        // Update system statistics
+                        updateSystemStats(data);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching production lines:', error);
+                    });
+            }
+
+            // Update every 3 seconds for more responsive dashboard
+            setInterval(updateDashboard, 3000);
+            updateDashboard(); // Initial update
+            
+            // Refresh all data function
+            function refreshAllData() {
+                console.log('Refreshing all dashboard data...');
+                updateDashboard();
+                // Force refresh of charts
+                if (chartsLoaded) {
+                    fetchAndPlotHistory('temperature', charts.temperature);
+                    fetchAndPlotHistory('humidity', charts.humidity);
+                    fetchAndPlotHistory('sound_level', charts.sound);
+                }
+                // Update debug time
+                document.getElementById('debug-time').textContent = new Date().toLocaleString();
+            }
+            
+            console.log('Dashboard update cycle started');
+
+            // Enhance anomaly trend chart
+            function updateAnomalyTrend(score) {
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString();
+                
+                charts.anomalyTrend.data.labels.push(timeStr);
+                charts.anomalyTrend.data.datasets[0].data.push(score);
+                
+                // Keep last 30 points for better trend visibility
+                if (charts.anomalyTrend.data.labels.length > 30) {
+                    charts.anomalyTrend.data.labels.shift();
+                    charts.anomalyTrend.data.datasets[0].data.shift();
+                }
+                
+                // Update chart options for better visualization
+                charts.anomalyTrend.options.scales.y.grid.color = (context) => {
+                    if (context.tick.value === 0.6) return 'rgba(255, 193, 7, 0.5)';  // Warning threshold
+                    if (context.tick.value === 0.8) return 'rgba(220, 53, 69, 0.5)';  // Critical threshold
+                    return 'rgba(0, 0, 0, 0.1)';
+                };
+                
+                charts.anomalyTrend.update('none');
+                
+                // Check if should play alert
+                if (score >= 0.6) {
+                    playBeep();
+                }
+            }
+
+            // Update system status function
+            function updateSystemStatus(data) {
+                const systemStatus = document.getElementById('system-status');
+                const modelStatus = data.model_status || { status: 'Unknown', version: 'Unknown' };
+                const healthStatus = data.health_status || { status: 'Unknown' };
+                
+                // Clear loading state
+                systemStatus.innerHTML = `
+                    <div class="status-item">
+                        <strong>Model Status:</strong>
+                        <span class="status-value ${modelStatus.status === 'Active' ? 'status-good' : 'status-warning'}">
+                            ${modelStatus.status}
+                        </span>
+                    </div>
+                    <div class="status-item">
+                        <strong>Health Status:</strong>
+                        <span class="status-value ${healthStatus.status === 'Healthy' ? 'status-good' : 'status-warning'}">
+                            ${healthStatus.status}
+                        </span>
+                    </div>
+                    <div class="status-item">
+                        <strong>Model Version:</strong>
+                        <span class="status-value">${modelStatus.version}</span>
+                    </div>
+                `;
+                
+                // Update last update time
+                document.getElementById('last-update').textContent = 
+                    `Last updated: ${new Date().toLocaleTimeString()}`;
+            }
+        </script>
+    </div>
+</body>
+</html> 

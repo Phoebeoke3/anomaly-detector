@@ -13,9 +13,9 @@ except ImportError:
     from company_profile import COMPANY_PROFILE
 
 class KaggleDataLoader:
-    """Loader for semiconductor manufacturing data from Kaggle."""
+    """Loader for wind turbine manufacturing data from Kaggle."""
     
-    def __init__(self, dataset_name="uciml/semiconductor-manufacturing", db_path="data/semiconductor.db"):
+    def __init__(self, dataset_name="berker/wind-turbine-scada-dataset", db_path="data/wind_turbine.db"):
         self.dataset_name = dataset_name
         self.db_path = db_path
         self.conn = None
@@ -155,32 +155,48 @@ class KaggleDataLoader:
             return False
     
     def load_kaggle_data(self):
-        """Load and preprocess Kaggle data."""
-        if not self.kaggle_available:
-            return None
-            
+        """Load and preprocess wind turbine manufacturing data."""
         try:
-            # Load the SECOM dataset
+            # Try to load synthetic wind turbine data first
+            synthetic_path = 'data/wind_turbine_synthetic.csv'
+            if os.path.exists(synthetic_path):
+                print("📊 Loading synthetic wind turbine manufacturing data...")
+                data = pd.read_csv(synthetic_path)
+                
+                # Convert timestamp to datetime
+                data['timestamp'] = pd.to_datetime(data['timestamp'])
+                
+                # Rename sound_level to sound for consistency
+                if 'sound_level' in data.columns:
+                    data = data.rename(columns={'sound_level': 'sound'})
+                
+                # Ensure we have the required columns
+                required_columns = ['timestamp', 'temperature', 'humidity', 'sound', 'target']
+                if all(col in data.columns for col in required_columns):
+                    print(f"✅ Loaded {len(data)} wind turbine manufacturing records")
+                    return data
+                else:
+                    print("❌ Missing required columns in synthetic data")
+            
+            # Fallback to old semiconductor data if synthetic data not available
+            print("🔄 Falling back to semiconductor data...")
             data_path = 'data/kaggle/secom.data'
             labels_path = 'data/kaggle/secom_labels.data'
             
             if not os.path.exists(data_path) or not os.path.exists(labels_path):
-                if not self.download_kaggle_data():
-                    return None
+                print("❌ No training data found. Generating synthetic data...")
+                return self.generate_synthetic_data(1000)
             
-            # Read the data
+            # Read the semiconductor data (fallback)
             data = pd.read_csv(data_path, sep=' ', header=None)
             labels = pd.read_csv(labels_path, sep=' ', header=None)
             
             # Clean the data
             data = data.replace('?', np.nan)
             data = data.astype(float)
-            
-            # Fill missing values with column means
             data = data.fillna(data.mean())
             
-            # Select relevant features (temperature, humidity, sound-like sensors)
-            # We'll map the SECOM features to our sensor types
+            # Map semiconductor features to wind turbine sensors
             feature_mapping = {
                 'temperature': [0, 1, 2],  # First three features as temperature
                 'humidity': [3, 4, 5],     # Next three features as humidity
@@ -193,10 +209,10 @@ class KaggleDataLoader:
             processed_data['sound'] = data.iloc[:, feature_mapping['sound']].mean(axis=1)
             processed_data['target'] = labels.iloc[:, 0]  # Anomaly labels
             
-            # Normalize the data to match our expected ranges
-            processed_data['temperature'] = self.normalize_to_range(processed_data['temperature'], 20, 30)
-            processed_data['humidity'] = self.normalize_to_range(processed_data['humidity'], 40, 60)
-            processed_data['sound'] = self.normalize_to_range(processed_data['sound'], 50, 70)
+            # Normalize to wind turbine manufacturing ranges
+            processed_data['temperature'] = self.normalize_to_range(processed_data['temperature'], 10, 40)
+            processed_data['humidity'] = self.normalize_to_range(processed_data['humidity'], 20, 80)
+            processed_data['sound'] = self.normalize_to_range(processed_data['sound'], 40, 90)
             
             # Add timestamps
             processed_data['timestamp'] = pd.date_range(
@@ -205,15 +221,16 @@ class KaggleDataLoader:
                 freq='h'
             )
             
-            # Add production line and component information
-            processed_data['production_line'] = 'line-1'
-            processed_data['component_id'] = 'wafer-1'
+            # Add production line and component information for wind turbine manufacturing
+            processed_data['production_line'] = 'turbine-line-1'
+            processed_data['component_id'] = 'blade-1'
             
             return processed_data
             
         except Exception as e:
-            print(f"Error loading Kaggle data: {e}")
-            return None
+            print(f"Error loading wind turbine data: {e}")
+            print("🔄 Generating synthetic wind turbine data as fallback...")
+            return self.generate_synthetic_data(1000)
     
     def normalize_to_range(self, series, min_val, max_val):
         """Normalize a series to a specific range."""
@@ -269,18 +286,14 @@ class KaggleDataLoader:
             return self.generate_synthetic_data(limit)
     
     def generate_synthetic_data(self, n_samples=1000):
-        """Generate synthetic data as fallback for wind turbine component factory."""
-        print("Generating synthetic wind turbine factory data as fallback...")
+        """Generate synthetic data for wind turbine component factory."""
+        print("Generating synthetic wind turbine factory data...")
         np.random.seed(42)
-        
-        # Generate timestamps
         timestamps = pd.date_range(
             start=datetime.now() - timedelta(hours=n_samples),
             periods=n_samples,
             freq='h'
         )
-        
-        # Generate sensor data for wind turbine context
         data = pd.DataFrame({
             'timestamp': timestamps,
             'production_line': 'turbine-line-1',
@@ -290,33 +303,40 @@ class KaggleDataLoader:
             'sound': np.random.normal(65, 10, n_samples).clip(40, 90),
             'target': np.random.choice([0, 1], size=n_samples, p=[0.9, 0.1])
         })
-        
         return data
 
 class SensorDataGenerator:
     """Main class for generating wind turbine sensor data."""
     
     def __init__(self):
-        self.loader = KaggleDataLoader()
-        self.data = self.loader.load_kaggle_data()
-        if self.data is not None:
-            self.loader.insert_data(self.data)
+        self.data = self.generate_synthetic_data(1000)
     
+    def generate_synthetic_data(self, n_samples=1000):
+        """Generate synthetic data for wind turbine component factory."""
+        print("Generating synthetic wind turbine factory data...")
+        np.random.seed(42)
+        timestamps = pd.date_range(
+            start=datetime.now() - timedelta(hours=n_samples),
+            periods=n_samples,
+            freq='h'
+        )
+        data = pd.DataFrame({
+            'timestamp': timestamps,
+            'production_line': 'turbine-line-1',
+            'component_id': 'blade-1',
+            'temperature': np.random.normal(25, 5, n_samples).clip(10, 40),
+            'humidity': np.random.normal(50, 15, n_samples).clip(20, 80),
+            'sound': np.random.normal(65, 10, n_samples).clip(40, 90),
+            'target': np.random.choice([0, 1], size=n_samples, p=[0.9, 0.1])
+        })
+        return data
+
     def generate_mixed_data(self, n_samples=1000, anomaly_ratio=0.1):
         """Generate a mix of normal and anomalous wind turbine data."""
-        if self.data is not None:
-            samples = self.data.sample(n=min(n_samples, len(self.data)))
-            return samples
-        else:
-            return self.loader.generate_synthetic_data(n_samples)
-    
+        return self.generate_synthetic_data(n_samples)
+
     def generate_normal_data(self, n_samples=1000):
         """Generate only normal wind turbine data."""
-        if self.data is not None:
-            normal_data = self.data[self.data['target'] == 0]
-            samples = normal_data.sample(n=min(n_samples, len(normal_data)))
-            return samples
-        else:
-            data = self.loader.generate_synthetic_data(n_samples)
-            data['target'] = 0
-            return data 
+        data = self.generate_synthetic_data(n_samples)
+        data['target'] = 0
+        return data 

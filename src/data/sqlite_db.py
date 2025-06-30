@@ -19,7 +19,7 @@ class SQLiteDB:
         load_dotenv()
         
         # Get database path from environment variables or use default
-        self.db_path = os.getenv('SQLITE_DB_PATH', 'semiconductor.db')
+        self.db_path = os.getenv('SQLITE_DB_PATH', 'data/wind_turbine.db')
         
         self.conn = None
         self._connect()
@@ -39,17 +39,18 @@ class SQLiteDB:
         try:
             cursor = self.conn.cursor()
             
-            # Create sensor readings table
+            # Create sensor readings table with correct schema
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS sensor_readings (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                     timestamp DATETIME,
-                    sensor_id TEXT,
+                    production_line TEXT,
+                    component_id TEXT,
                     temperature REAL,
                     humidity REAL,
                     sound_level REAL,
+                    is_anomaly INTEGER,
                     anomaly_score REAL,
-                    prediction TEXT
+                    PRIMARY KEY (production_line, timestamp, component_id)
                 )
             """)
             
@@ -71,43 +72,61 @@ class SQLiteDB:
     def insert_sensor_data(self, data):
         """Insert sensor data into SQLite."""
         try:
+            # Ensure we have a valid connection
+            if not self.conn:
+                self._connect()
+            
             query = """
-                INSERT INTO sensor_readings (
-                    timestamp, sensor_id, temperature, humidity,
-                    sound_level, anomaly_score, prediction
-                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT OR REPLACE INTO sensor_readings (
+                    timestamp, production_line, component_id, temperature, humidity,
+                    sound_level, is_anomaly, anomaly_score
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """
             
             cursor = self.conn.cursor()
             cursor.execute(query, (
                 data['timestamp'],
-                data['sensor_id'],
+                data['production_line'],
+                data['component_id'],
                 data['temperature'],
                 data['humidity'],
                 data['sound_level'],
-                data['anomaly_score'],
-                data['prediction']
+                data['is_anomaly'],
+                data['anomaly_score']
             ))
+            
+            # Commit the transaction
             self.conn.commit()
-            logger.info(f"Inserted data for sensor {data['sensor_id']}")
+            logger.info(f"Inserted data for {data['production_line']} - {data['component_id']}")
         except Exception as e:
             logger.error(f"Error inserting sensor data: {e}")
+            # Try to rollback if there's an active transaction
+            try:
+                if self.conn:
+                    self.conn.rollback()
+            except:
+                pass
+            # Try to reconnect if connection is lost
+            try:
+                self._connect()
+            except:
+                pass
             raise
     
-    def get_sensor_history(self, sensor_id, hours=24):
-        """Get historical data for a specific sensor."""
+    def get_sensor_history(self, production_line, hours=24):
+        """Get historical data for a specific production line."""
         try:
             query = """
                 SELECT timestamp, temperature, humidity, sound_level,
-                       anomaly_score, prediction
+                       is_anomaly
                 FROM sensor_readings
-                WHERE sensor_id = ?
+                WHERE production_line = ?
                 AND timestamp > datetime('now', ?)
                 ORDER BY timestamp DESC
             """
             
             start_time = f'-{hours} hours'
-            df = pd.read_sql_query(query, self.conn, params=(sensor_id, start_time))
+            df = pd.read_sql_query(query, self.conn, params=(production_line, start_time))
             return df
         except Exception as e:
             logger.error(f"Error retrieving sensor history: {e}")
@@ -175,6 +194,23 @@ class SQLiteDB:
         if self.conn:
             self.conn.close()
             logger.info("Closed SQLite connection")
+
+    def update_anomaly_score(self, timestamp, production_line, component_id, anomaly_score):
+        """Update anomaly score for existing record."""
+        try:
+            query = """
+                UPDATE sensor_readings 
+                SET anomaly_score = ?
+                WHERE timestamp = ? AND production_line = ? AND component_id = ?
+            """
+            
+            cursor = self.conn.cursor()
+            cursor.execute(query, (anomaly_score, timestamp, production_line, component_id))
+            self.conn.commit()
+            logger.info(f"Updated anomaly score for {production_line} - {component_id}")
+        except Exception as e:
+            logger.error(f"Error updating anomaly score: {e}")
+            raise
 
 def load_company_config():
     """Load company configuration from file."""

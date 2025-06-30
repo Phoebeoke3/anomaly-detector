@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Data View - Wind Turbine Anomaly Detection</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet">
+    <style>
+        .nav-card {
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+        .data-card {
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+        .table-responsive {
+            max-height: 600px;
+            overflow-y: auto;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .table {
+            margin-bottom: 0;
+            background: white;
+        }
+        .table th {
+            position: sticky;
+            top: 0;
+            background: #2c3e50 !important;
+            color: white !important;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            padding: 12px !important;
+            border-bottom: 2px solid #34495e;
+            z-index: 1;
+        }
+        .table td {
+            padding: 12px !important;
+            vertical-align: middle;
+            border-bottom: 1px solid #eee;
+            color: #2c3e50;
+            font-size: 0.95rem;
+        }
+        .table tbody tr:nth-child(odd) {
+            background-color: #f8fafc;
+        }
+        .table tbody tr:hover {
+            background-color: #e8f4ff;
+        }
+        .table .timestamp-column {
+            min-width: 160px;
+            font-weight: 500;
+        }
+        .table .numeric-column {
+            font-family: 'Consolas', monospace;
+            text-align: right;
+            font-weight: 500;
+        }
+        .table .status-column {
+            font-weight: 600;
+        }
+        .table .id-column {
+            font-family: 'Consolas', monospace;
+            font-weight: 500;
+            color: #6b7280;
+        }
+        .sensor-value {
+            font-weight: 600;
+            color: #2563eb;
+        }
+        .anomaly-score {
+            font-weight: 600;
+        }
+        .anomaly-score.high {
+            color: #dc2626;
+        }
+        .anomaly-score.medium {
+            color: #d97706;
+        }
+        .anomaly-score.low {
+            color: #059669;
+        }
+        .table-header {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px 8px 0 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .table-footer {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 0 0 8px 8px;
+            border-top: 1px solid #e5e7eb;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #007bff;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        .btn-nav {
+            margin: 5px;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">{{ company.name }} - Data View</span>
+            <div class="d-flex align-items-center">
+                <a href="/" class="btn btn-outline-light btn-sm me-2">
+                    <i class="bx bx-arrow-back"></i> Back to Dashboard
+                </a>
+                <span class="text-light">{{ company.facility }}</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- Main Navigation Buttons -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h4 class="card-title mb-4">Data Exploration Tools</h4>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <button class="btn btn-primary btn-lg w-100 mb-2" onclick="loadDataSamples()">
+                                    <i class="bx bx-data"></i><br>
+                                    <strong>View Sample Data</strong><br>
+                                    <small>Browse data samples and statistics</small>
+                                </button>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-success btn-lg w-100 mb-2" onclick="showTableSelector()">
+                                    <i class="bx bx-table"></i><br>
+                                    <strong>View Table Data</strong><br>
+                                    <small>Inspect specific database tables</small>
+                                </button>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="/" class="btn btn-info btn-lg w-100 mb-2">
+                                    <i class="bx bx-home"></i><br>
+                                    <strong>Back to Dashboard</strong><br>
+                                    <small>Return to main monitoring view</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Selector (Hidden by default) -->
+        <div class="row mb-4" id="table-selector-section" style="display: none;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Select Table and Limit</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="table-selector" class="form-label">Table:</label>
+                                <select class="form-select" id="table-selector">
+                                    <option value="sensor_readings">sensor_readings</option>
+                                    <option value="model_metadata">model_metadata</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="limit-input" class="form-label">Limit:</label>
+                                <input type="number" class="form-control" id="limit-input" value="50" min="1" max="1000" placeholder="Limit">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">&nbsp;</label>
+                                <button class="btn btn-success w-100" onclick="loadTableData()">
+                                    <i class="bx bx-search"></i> Load
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Statistics -->
+        <div class="row">
+            <div class="col-12">
+                <div class="data-card">
+                    <h5><i class="bx bx-stats"></i> Database Statistics</h5>
+                    <div class="stats-grid" id="db-stats">
+                        <div class="stat-card">
+                            <div class="stat-value" id="total-records">--</div>
+                            <div class="stat-label">Total Records</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="total-tables">--</div>
+                            <div class="stat-label">Tables</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="latest-record">--</div>
+                            <div class="stat-label">Latest Record</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="db-size">--</div>
+                            <div class="stat-label">Database Size</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Display Area -->
+        <div class="row">
+            <div class="col-12">
+                <div class="data-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 id="data-title"><i class="bx bx-data"></i> Data View</h5>
+                        <div>
+                            <a href="/export-csv" class="btn btn-outline-secondary btn-sm" target="_blank">
+                                <i class="bx bx-download"></i> Export CSV
+                            </a>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="refreshData()">
+                                <i class="bx bx-refresh"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="loading-message" class="loading" style="display: none;">
+                        <i class="bx bx-loader-alt bx-spin"></i> Loading data...
+                    </div>
+                    
+                    <div id="error-message" class="error-message" style="display: none;"></div>
+                    
+                    <div id="data-content">
+                        <div class="text-center text-muted">
+                            <i class="bx bx-data" style="font-size: 48px;"></i>
+                            <p>Select an option above to view data</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentData = null;
+        let currentDataType = null;
+
+        // Load database statistics on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDatabaseStats();
+        });
+
+        // Show table selector section
+        function showTableSelector() {
+            document.getElementById('table-selector-section').style.display = 'block';
+            document.getElementById('data-content').innerHTML = `
+                <div class="text-center text-muted">
+                    <i class="bx bx-table" style="font-size: 48px;"></i>
+                    <p>Select a table and limit above, then click "Load" to view data</p>
+                </div>
+            `;
+        }
+
+        function loadDatabaseStats() {
+            showLoading('Loading database statistics...');
+            const timestamp = new Date().getTime();
+            fetch(`/api/database-stats?_t=${timestamp}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Update database statistics
+                    document.getElementById('total-records').textContent = data.total_records.toLocaleString() || '--';
+                    document.getElementById('total-tables').textContent = data.num_production_lines || '--';
+                    document.getElementById('latest-record').textContent = new Date(data.latest_record).toLocaleString() || '--';
+                    document.getElementById('db-size').textContent = `${data.database_size_mb} MB` || '--';
+                    hideLoading();
+                })
+                .catch(error => {
+                    console.error('Error loading database stats:', error);
+                    showError('Failed to load database statistics: ' + error.message);
+                    hideLoading();
+                });
+        }
+
+        function loadDataSamples() {
+            showLoading('Loading data samples...');
+            const timestamp = new Date().getTime();
+            fetch(`/api/data-samples?_t=${timestamp}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('data-title').innerHTML = `<i class="bx bx-data"></i> Data Samples`;
+                    
+                    let html = '<div class="row">';
+                    
+                    // Sensor Readings Samples
+                    if (data.samples.sensor_readings && data.samples.sensor_readings.length > 0) {
+                        html += `
+                            <div class="col-12 mb-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6><i class="bx bx-chip"></i> Sensor Readings (Latest 5)</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        ${Object.keys(data.samples.sensor_readings[0]).map(key => 
+                                                            `<th>${key.replace(/_/g, ' ').toUpperCase()}</th>`
+                                                        ).join('')}
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    ${data.samples.sensor_readings.map(row => 
+                                                        `<tr>${Object.values(row).map(val => 
+                                                            `<td>${val}</td>`
+                                                        ).join('')}</tr>`
+                                                    ).join('')}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    // Model Metadata Samples
+                    if (data.samples.model_metadata && data.samples.model_metadata.length > 0) {
+                        html += `
+                            <div class="col-12 mb-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6><i class="bx bx-brain"></i> Model Metadata (Latest 5)</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        ${Object.keys(data.samples.model_metadata[0]).map(key => 
+                                                            `<th>${key.replace(/_/g, ' ').toUpperCase()}</th>`
+                                                        ).join('')}
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    ${data.samples.model_metadata.map(row => 
+                                                        `<tr>${Object.values(row).map(val => 
+                                                            `<td>${val}</td>`
+                                                        ).join('')}</tr>`
+                                                    ).join('')}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    html += '</div>';
+                    document.getElementById('data-content').innerHTML = html;
+                    hideLoading();
+                })
+                .catch(error => {
+                    console.error('Error loading data samples:', error);
+                    showError('Failed to load data samples: ' + error.message);
+                    hideLoading();
+                });
+        }
+
+        function loadTableData() {
+            const tableName = document.getElementById('table-selector').value;
+            const limit = document.getElementById('limit-input').value;
+            
+            if (!tableName || !limit) {
+                showError('Please select a table and enter a limit');
+                return;
+            }
+            
+            showLoading(`Loading ${tableName} data (limit: ${limit})...`);
+            currentDataType = 'table';
+            document.getElementById('data-title').innerHTML = `<i class="bx bx-table"></i> ${tableName} Data`;
+            
+            const timestamp = new Date().getTime();
+            fetch(`/api/table-data/${tableName}?limit=${limit}&_t=${timestamp}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    currentData = data;
+                    displayTableData(data, tableName);
+                    hideLoading();
+                })
+                .catch(error => {
+                    console.error('Error loading table data:', error);
+                    showError(`Failed to load ${tableName} data: ` + error.message);
+                    hideLoading();
+                });
+        }
+
+        function displayDataSamples(data) {
+            let html = '<div class="row">';
+            
+            // Database Statistics
+            if (data.database_stats) {
+                html += `
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6><i class="bx bx-stats"></i> Database Statistics</h6>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Total Records:</strong> ${data.database_stats.total_records || 'N/A'}</p>
+                                <p><strong>Total Tables:</strong> ${data.database_stats.total_tables || 'N/A'}</p>
+                                <p><strong>Latest Record:</strong> ${data.database_stats.latest_record || 'N/A'}</p>
+                                <p><strong>Database Size:</strong> ${data.database_stats.db_size || 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Table Samples
+            if (data.table_samples) {
+                Object.entries(data.table_samples).forEach(([tableName, sampleData]) => {
+                    html += `
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6><i class="bx bx-table"></i> ${tableName} (Sample)</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    ${Object.keys(sampleData[0] || {}).map(key => `<th>${key}</th>`).join('')}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${sampleData.slice(0, 5).map(row => 
+                                                    `<tr>${Object.values(row).map(val => `<td>${val}</td>`).join('')}</tr>`
+                                                ).join('')}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <p class="text-muted mt-2">Showing ${Math.min(5, sampleData.length)} of ${sampleData.length} records</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            html += '</div>';
+            document.getElementById('data-content').innerHTML = html;
+        }
+
+        function displayTableData(data, tableName) {
+            if (!data || !data.records || data.records.length === 0) {
+                document.getElementById('data-content').innerHTML = `
+                    <div class="text-center text-muted">
+                        <i class="bx bx-table" style="font-size: 48px;"></i>
+                        <p>No data found in ${tableName}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const records = data.records;
+            const columns = Object.keys(records[0]);
+            
+            let html = `
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4>Table Data</h4>
+                    <a href="/export-csv" class="btn btn-success btn-sm" target="_blank">
+                        <i class="bx bx-download"></i> Export CSV
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                ${columns.map(col => `<th>${formatColumnName(col)}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${records.map(row => 
+                                `<tr>${columns.map(col => `<td>${formatCellValue(col, row[col])}</td>`).join('')}</tr>`
+                            ).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3">
+                    <p class="text-muted">Showing ${records.length} records from ${tableName}</p>
+                </div>
+            `;
+            
+            document.getElementById('data-content').innerHTML = html;
+        }
+
+        function formatColumnName(col) {
+            return col.split('_')
+                     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                     .join(' ');
+        }
+
+        function getCellClass(col) {
+            if (col === 'timestamp') return 'timestamp-column';
+            if (col === 'id' || col.endsWith('_id')) return 'id-column';
+            if (['temperature', 'humidity', 'sound', 'pressure'].includes(col)) return 'numeric-column';
+            if (col === 'anomaly_score') return 'numeric-column';
+            if (col === 'status') return 'status-column';
+            return '';
+        }
+
+        function formatCellValue(col, value) {
+            if (value === null || value === undefined) return '-';
+            
+            if (col === 'timestamp') {
+                return new Date(value).toLocaleString();
+            }
+            
+            if (['temperature', 'humidity', 'sound', 'pressure'].includes(col)) {
+                return `<span class="sensor-value">${Number(value).toFixed(2)}</span>`;
+            }
+            
+            if (col === 'anomaly_score') {
+                const score = Number(value);
+                let className = 'low';
+                if (score >= 0.7) className = 'high';
+                else if (score >= 0.4) className = 'medium';
+                return `<span class="anomaly-score ${className}">${score.toFixed(3)}</span>`;
+            }
+            
+            return value;
+        }
+
+        function showLoading(message) {
+            document.getElementById('loading-message').innerHTML = `<i class="bx bx-loader-alt bx-spin"></i> ${message}`;
+            document.getElementById('loading-message').style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading-message').style.display = 'none';
+        }
+
+        function showError(message) {
+            document.getElementById('error-message').innerHTML = `<i class="bx bx-error"></i> ${message}`;
+            document.getElementById('error-message').style.display = 'block';
+            document.getElementById('loading-message').style.display = 'none';
+        }
+
+        function exportToCSV() {
+            if (!currentData) {
+                showError('No data to export');
+                return;
+            }
+            
+            let csvContent = '';
+            
+            if (currentDataType === 'table' && currentData.records) {
+                const records = currentData.records;
+                if (records.length === 0) {
+                    showError('No data to export');
+                    return;
+                }
+                
+                const columns = Object.keys(records[0]);
+                csvContent = columns.join(',') + '\n';
+                csvContent += records.map(row => 
+                    columns.map(col => `"${row[col] || ''}"`).join(',')
+                ).join('\n');
+            } else if (currentDataType === 'samples' && currentData.table_samples) {
+                Object.entries(currentData.table_samples).forEach(([tableName, sampleData]) => {
+                    csvContent += `\n=== ${tableName} ===\n`;
+                    if (sampleData.length > 0) {
+                        const columns = Object.keys(sampleData[0]);
+                        csvContent += columns.join(',') + '\n';
+                        csvContent += sampleData.map(row => 
+                            columns.map(col => `"${row[col] || ''}"`).join(',')
+                        ).join('\n');
+                    }
+                });
+            }
+            
+            if (csvContent) {
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `data_export_${new Date().toISOString().slice(0, 10)}.csv`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            }
+        }
+
+        function refreshData() {
+            if (currentDataType === 'samples') {
+                loadDataSamples();
+            } else if (currentDataType === 'table') {
+                loadTableData();
+            } else {
+                loadDatabaseStats();
+            }
+        }
+    </script>
+</body>
+</html>

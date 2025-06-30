@@ -1,6 +1,6 @@
 """
-ChipTech Semiconductor Manufacturing - Company Profile
-Specializing in high-precision semiconductor manufacturing and chip production
+PTech Wind Turbine Manufacturing - Company Profile
+Specializing in high-precision Wind Turbine manufacturing and assembly
 """
 
 COMPANY_PROFILE = {

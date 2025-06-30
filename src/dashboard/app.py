@@ -18,7 +18,7 @@ from data.sqlite_db import SQLiteDB
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format='[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
     handlers=[
         logging.FileHandler('app.log'),
         logging.StreamHandler()
@@ -92,10 +92,29 @@ def handle_errors(f):
             }), 500
     return wrapper
 
+@app.before_request
+def log_request_info():
+    logging.info(f"Request: {request.method} {request.path} - {request.remote_addr}")
+
+@app.after_request
+def log_response_info(response):
+    logging.info(f"Response: {response.status} for {request.method} {request.path}")
+    return response
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    logging.error(f"Exception: {str(e)}", exc_info=True)
+    return jsonify({'error': str(e)}), 500
+
 @app.route('/')
 def index():
     """Render the main dashboard page."""
     return render_template('index.html', company=load_company_config())
+
+@app.route('/data-view')
+def data_view():
+    """Render the data view page."""
+    return render_template('data_view.html', company=load_company_config())
 
 @app.route('/api/current-status')
 @handle_errors
@@ -138,6 +157,8 @@ def predict():
         - temperature: float (10-40°C)
         - humidity: float (20-80%)
         - sound_level: float (40-90 dB)
+        - production_line: str (optional, defaults to 'turbine-line-1')
+        - component_id: str (optional, defaults to 'blade-1')
     
     Returns:
         JSON object containing:
@@ -172,7 +193,7 @@ def predict():
     df = pd.DataFrame([{
         'temperature': data['temperature'],
         'humidity': data['humidity'],
-        'sound': data['sound_level']
+        'sound': data['sound_level']  # Map sound_level to sound for model
     }])
     
     # Get prediction
@@ -185,15 +206,15 @@ def predict():
     elif anomaly_score >= detector.metrics['threshold'] * 0.8:
         status = 'warning'
     
-    # Store in database
+    # Store in database with existing schema
     db.insert_sensor_data({
         'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'sensor_id': data.get('sensor_id', 'simulator-1'),
+        'production_line': data.get('production_line', 'turbine-line-1'),
+        'component_id': data.get('component_id', 'blade-1'),
         'temperature': data['temperature'],
         'humidity': data['humidity'],
-        'sound_level': data['sound_level'],
-        'anomaly_score': anomaly_score,
-        'prediction': status
+        'sound': data['sound_level'],  # Map sound_level to sound
+        'is_anomaly': 1 if status != 'normal' else 0
     })
     
     return jsonify({
@@ -327,6 +348,244 @@ def debug_sensor_count():
         'min_timestamp': row[1],
         'max_timestamp': row[2]
     })
+
+@app.route('/api/database-stats')
+@handle_errors
+def database_stats():
+    """Get database statistics.
+    
+    Returns:
+        JSON object containing database statistics.
+    """
+    try:
+        # Get total records
+        total_records = db.conn.execute("SELECT COUNT(*) FROM sensor_readings").fetchone()[0]
+        
+        # Get total tables
+        tables = db.conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
+        total_tables = len(tables)
+        
+        # Get latest record timestamp
+        latest_record = db.conn.execute("SELECT MAX(timestamp) FROM sensor_readings").fetchone()[0]
+        
+        # Get database file size
+        db_size = "Unknown"
+        try:
+            db_path = 'data/wind_turbine.db'
+            if os.path.exists(db_path):
+                size_bytes = os.path.getsize(db_path)
+                if size_bytes < 1024:
+                    db_size = f"{size_bytes} B"
+                elif size_bytes < 1024 * 1024:
+                    db_size = f"{size_bytes / 1024:.1f} KB"
+                else:
+                    db_size = f"{size_bytes / (1024 * 1024):.1f} MB"
+        except:
+            pass
+        
+        return jsonify({
+            'total_records': total_records,
+            'total_tables': total_tables,
+            'latest_record': latest_record,
+            'db_size': db_size,
+            'timestamp': datetime.now().isoformat()
+        })
+    except Exception as e:
+        logger.error(f"Error getting database stats: {e}")
+        return jsonify({
+            'error': 'Failed to get database statistics',
+            'status_code': 500
+        }), 500
+
+@app.route('/api/data-samples')
+@handle_errors
+def data_samples():
+    """Get data samples from all tables.
+    
+    Returns:
+        JSON object containing sample data from all tables.
+    """
+    try:
+        # Ensure database connection
+        if not db.conn:
+            db._connect()
+        
+        # Get database statistics with error handling
+        try:
+            total_records = db.conn.execute("SELECT COUNT(*) FROM sensor_readings").fetchone()[0]
+        except:
+            total_records = 0
+            
+        try:
+            tables = db.conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
+            total_tables = len(tables)
+        except:
+            tables = []
+            total_tables = 0
+            
+        try:
+            latest_record = db.conn.execute("SELECT MAX(timestamp) FROM sensor_readings").fetchone()[0]
+        except:
+            latest_record = "No data"
+        
+        # Get database file size
+        db_size = "Unknown"
+        try:
+            db_path = 'data/wind_turbine.db'
+            if os.path.exists(db_path):
+                size_bytes = os.path.getsize(db_path)
+                if size_bytes < 1024:
+                    db_size = f"{size_bytes} B"
+                elif size_bytes < 1024 * 1024:
+                    db_size = f"{size_bytes / 1024:.1f} KB"
+                else:
+                    db_size = f"{size_bytes / (1024 * 1024):.1f} MB"
+        except:
+            pass
+        
+        database_stats = {
+            'total_records': total_records,
+            'total_tables': total_tables,
+            'latest_record': latest_record,
+            'db_size': db_size
+        }
+        
+        # Get sample data from each table
+        table_samples = {}
+        
+        for table in tables:
+            table_name = table[0]
+            
+            try:
+                # Get sample data (up to 10 records)
+                count = db.conn.execute(f"SELECT COUNT(*) FROM {table_name}").fetchone()[0]
+                if count > 0:
+                    sample_rows = db.conn.execute(f"SELECT * FROM {table_name} ORDER BY timestamp DESC LIMIT 10").fetchall()
+                    columns = [description[0] for description in db.conn.execute(f"SELECT * FROM {table_name} LIMIT 1").description]
+                    
+                    table_samples[table_name] = []
+                    for row in sample_rows:
+                        table_samples[table_name].append(dict(zip(columns, row)))
+                else:
+                    table_samples[table_name] = []
+            except Exception as e:
+                logger.error(f"Error getting sample data for table {table_name}: {e}")
+                table_samples[table_name] = []
+        
+        return jsonify({
+            'database_stats': database_stats,
+            'table_samples': table_samples,
+            'timestamp': datetime.now().isoformat()
+        })
+    except Exception as e:
+        logger.error(f"Error getting data samples: {e}")
+        # Return a minimal response instead of error
+        return jsonify({
+            'database_stats': {
+                'total_records': 0,
+                'total_tables': 0,
+                'latest_record': 'Error loading data',
+                'db_size': 'Unknown'
+            },
+            'table_samples': {},
+            'timestamp': datetime.now().isoformat(),
+            'error': 'Some data could not be loaded'
+        })
+
+@app.route('/api/table-data/<table_name>')
+@handle_errors
+def table_data(table_name):
+    """Get data from a specific table.
+    
+    Args:
+        table_name: Name of the table to query
+        
+    Returns:
+        JSON object containing table data and metadata.
+    """
+    try:
+        # Ensure database connection
+        if not db.conn:
+            db._connect()
+        
+        # Validate table name to prevent SQL injection
+        valid_tables = ['sensor_readings', 'model_metadata']
+        if table_name not in valid_tables:
+            return jsonify({
+                'error': 'Invalid table name',
+                'status_code': 400
+            }), 400
+        
+        # Get limit parameter
+        limit = request.args.get('limit', 50, type=int)
+        limit = min(max(limit, 1), 1000)  # Clamp between 1 and 1000
+        
+        # Get total count with error handling
+        try:
+            total_count = db.conn.execute(f"SELECT COUNT(*) FROM {table_name}").fetchone()[0]
+        except:
+            total_count = 0
+        
+        # Get data from table with error handling
+        try:
+            rows = db.conn.execute(f"SELECT * FROM {table_name} ORDER BY timestamp DESC LIMIT {limit}").fetchall()
+            
+            # Get column names
+            columns = [description[0] for description in db.conn.execute(f"SELECT * FROM {table_name} LIMIT 1").description]
+            
+            # Convert rows to dictionaries
+            records = []
+            for row in rows:
+                records.append(dict(zip(columns, row)))
+        except Exception as e:
+            logger.error(f"Error getting data from table {table_name}: {e}")
+            rows = []
+            columns = []
+            records = []
+        
+        return jsonify({
+            'table_name': table_name,
+            'total_count': total_count,
+            'returned_count': len(records),
+            'limit': limit,
+            'records': records,
+            'columns': columns,
+            'timestamp': datetime.now().isoformat()
+        })
+    except Exception as e:
+        logger.error(f"Error getting table data: {e}")
+        # Return a minimal response instead of error
+        return jsonify({
+            'table_name': table_name,
+            'total_count': 0,
+            'returned_count': 0,
+            'limit': limit,
+            'records': [],
+            'columns': [],
+            'timestamp': datetime.now().isoformat(),
+            'error': 'Could not load table data'
+        })
+
+@app.route('/api/health')
+def health():
+    """Health check endpoint for monitoring."""
+    try:
+        # Check database connection
+        db_status = 'ok'
+        try:
+            db.conn.execute('SELECT 1')
+        except Exception:
+            db_status = 'error'
+        # Check model status
+        model_status = 'ok' if detector is not None else 'error'
+        return jsonify({
+            'status': 'ok' if db_status == 'ok' and model_status == 'ok' else 'error',
+            'database': db_status,
+            'model': model_status,
+            'timestamp': datetime.now().isoformat()
+        })
+    except Exception as e:
+        return jsonify({'status': 'error', 'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000) 

@@ -19,7 +19,18 @@ class DataSimulator:
             data = data.rename(columns={'sound': 'sound_level'})
             # Convert timestamp to string for JSON serialization
             data_dict = data.to_dict('records')[0]
-            data_dict['timestamp'] = data_dict['timestamp'].isoformat()
+            # Add microsecond precision to avoid exact timestamp duplicates
+            timestamp = data_dict['timestamp']
+            if hasattr(timestamp, 'microsecond'):
+                # Add microsecond precision if it's a datetime object
+                data_dict['timestamp'] = timestamp.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+            else:
+                data_dict['timestamp'] = data_dict['timestamp'].isoformat()
+            
+            # Add required fields for wind turbine manufacturing
+            data_dict['production_line'] = data_dict.get('production_line', 'turbine-line-1')
+            data_dict['component_id'] = data_dict.get('component_id', 'blade-1')
+            
             response = requests.post(
                 self.api_url,
                 json=data_dict,

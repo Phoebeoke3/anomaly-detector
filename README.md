@@ -5,59 +5,21 @@ A real-time anomaly detection system for wind turbine component manufacturing fa
 ## System Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           ANOMALY DETECTION SYSTEM                          │
-└─────────────────────────────────────────────────────────────────────────────┘
-
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   DATA SOURCES  │    │  DATA INGESTION │    │  DATA STORAGE   │    │  ML PROCESSING  │
-│                 │    │                 │    │                 │    │                 │
-│ • IoT Sensors   │───▶│ • Validation    │───▶│ • SQLite DB     │───▶│ • Isolation     │
-│ • Simulator     │    │ • Cleaning      │    │ • CSV Cache     │    │   Forest        │
-│ • Kaggle Data   │    │ • Processing    │    │ • Model Files   │    │ • Feature Eng.  │
-└─────────────────┘    └─────────────────┘    └─────────────────┘    └─────────────────┘
-                                                                              │
-                                                                              ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   DASHBOARD     │◀───│   API LAYER     │◀───│  PREDICTION     │◀───│  MODEL SERVICE  │
-│                 │    │                 │    │                 │    │                 │
-│ • HTML/CSS/JS   │    │ • Flask Server  │    │ • Real-time     │    │ • Model Loading │
-│ • Chart.js      │    │ • REST API      │    │   Scoring       │    │ • Versioning    │
-│ • Bootstrap     │    │ • Endpoints     │    │ • Anomaly Alerts│    │ • Persistence   │
-└─────────────────┘    └─────────────────┘    └─────────────────┘    └─────────────────┘
+flowchart LR
+    A[Sensor Data (Simulated)] -->|Stream| B[Data Ingestion Script]
+    B --> C[Data Storage (SQLite)]
+    B --> D[Anomaly Detection API (Flask)]
+    D --> E[Dashboard]
+    D --> F[Monitoring & Logging]
+    E -->|User Feedback| D
 ```
 
-### Component Details
-
-1. **Data Ingestion Layer**
-   - Simulated sensor data generation for wind turbine components
-   - Continuous data stream simulation
-   - Data validation and preprocessing
-   - Real-time data buffering
-
-2. **Data Processing Layer**
-   - Feature extraction and normalization
-   - Data quality checks
-   - Time-series data handling
-   - Data persistence (SQLite database)
-
-3. **Model Service Layer**
-   - Isolation Forest-based anomaly detection
-   - Model training and evaluation
-   - Real-time prediction service
-   - Model versioning and persistence
-
-4. **API Layer**
-   - RESTful endpoints for predictions
-   - Health monitoring
-   - Model status reporting
-   - Data ingestion endpoints
-
-5. **Dashboard Layer**
-   - Real-time visualization
-   - System status monitoring
-   - Historical data analysis
-   - Alert management
+- **Sensor Data**: Simulated wind turbine sensor data (temperature, humidity, sound).
+- **Data Ingestion**: Python script generates and POSTs data to the API.
+- **Data Storage**: SQLite database for persistence.
+- **Anomaly Detection API**: Flask app, receives sensor data, returns anomaly score.
+- **Dashboard**: Visualizes production line status, sensor trends, and anomalies.
+- **Monitoring & Logging**: Logs all API requests, predictions, and errors. `/api/health` endpoint for health checks.
 
 ## Data Source and Simulation
 
@@ -103,6 +65,15 @@ The system uses simulated sensor data that mimics real wind turbine component ma
 │       ├── app.py           # Flask application
 │       └── templates/
 │           └── index.html   # Dashboard UI
+├── utils/                    # Utility scripts and functions
+│   ├── __init__.py          # Package initialization
+│   ├── README.md            # Utils documentation
+│   ├── check_db.py          # Database connection testing
+│   ├── view_data_samples.py # Data visualization utilities
+│   ├── view_table_data.py   # Table data inspection
+│   ├── setup_kaggle.py      # Kaggle dataset setup
+│   ├── wind_turbine_datasets.py # Dataset handling
+│   └── data_storage_report.py   # Storage analysis
 ├── models/                   # Trained model storage
 ├── requirements.txt         # Project dependencies
 └── README.md               # Project documentation
@@ -144,28 +115,38 @@ pip install -r requirements.txt
 python src/model/train.py
 ```
 
-2. Start the dashboard:
+2. Start the API server (port 5000):
 ```bash
-python src/dashboard/app.py
+python run_api.py
 ```
 
-3. **Start the simulator in a new terminal (required for live data):**
+3. Start the dashboard server (port 5001):
+```bash
+python run_dashboard.py
+```
+
+4. **Start the simulator in a new terminal (required for live data):**
 ```bash
 python -m src.data.simulator
 ```
 
-4. Access the dashboard:
-Open your web browser and navigate to `http://localhost:5000`
+5. Access the dashboard:
+Open your web browser and navigate to `http://localhost:5001`
 
-<!-- #,# Troubleshooting
+## View all data
+python utils/view_data_samples.py
 
-- **Blank charts?**
-  - Make sure the simulator is running and sending data.
-  - Check the debug endpoint: [http://localhost:5000/api/debug-sensor-count](http://localhost:5000/api/debug-sensor-count)
-    - If `count` is 0, the database is empty. Check the simulator output for errors.
-  - The simulator and API must use the `sound_level` field (not `sound`).
-  - If you see `Error sending data: 400` in the simulator, check that the field names match the API requirements.
-  - Ensure Chart.js can access the canvas elements (check browser console for errors). -->
+# Or use the existing viewer for specific tables
+python utils/view_table_data.py
+
+# View specific table with custom limit
+python -c "from utils.view_table_data import view_table_data; view_table_data('sensor_readings', 50)"
+
+# Check database connection
+python utils/check_db.py
+
+# Setup Kaggle datasets
+python utils/setup_kaggle.py
 
 ## Debug Endpoints
 
@@ -270,3 +251,116 @@ Python 3.7+
 ├── requests>=2.25.1      # HTTP client
 ├── python-dotenv>=0.19.0 # Environment management
 └── kaggle>=1.7.4.5       # Kaggle API
+
+from sklearn.ensemble import IsolationForest
+from sklearn.preprocessing import StandardScaler
+
+# Model Configuration for Wind Turbine Context
+model = IsolationForest(
+    contamination=0.1,      # Expected 10% anomaly rate in manufacturing
+    random_state=42,
+    n_estimators=100
+)
+
+# Feature Engineering for Wind Turbine Sensors
+scaler = StandardScaler()
+features = ['temperature', 'humidity', 'sound_level']
+
+# Real-time wind turbine sensor data generator
+class DataSimulator:
+    def run(self, duration=None):
+        while True:
+            # Generate realistic wind turbine manufacturing data
+            data = {
+                "temperature": random.uniform(10, 40),  # Blade curing range
+                "humidity": random.uniform(20, 80),     # Resin infusion range
+                "sound_level": random.uniform(40, 90),  # Assembly operations
+                "timestamp": datetime.now().isoformat(),
+                "sensor_id": "simulator-1",
+                "production_line": "turbine-line-1"
+            }
+            
+            # HTTP POST to API endpoint every 1 second
+            requests.post("http://localhost:5000/api/predict", json=data)
+            time.sleep(1.0)
+
+from flask import Flask, request, jsonify
+import joblib
+import pandas as pd
+
+app = Flask(__name__)
+
+@app.route('/api/predict', methods=['POST'])
+def predict_anomaly():
+    # 1. Receive wind turbine sensor data
+    data = request.get_json()
+    
+    # 2. Validate manufacturing ranges
+    validate_wind_turbine_data(data)
+    
+    # 3. Create DataFrame for prediction
+    df = pd.DataFrame([{
+        'temperature': data['temperature'],
+        'humidity': data['humidity'],
+        'sound_level': data['sound_level']
+    }])
+    
+    # 4. Feature engineering and prediction
+    features = scaler.transform(df[features])
+    anomaly_score = model.predict(features)[0]
+    
+    # 5. Return standardized response
+    return jsonify({
+        'anomaly_score': float(anomaly_score),
+        'status': classify_manufacturing_status(anomaly_score),
+        'timestamp': data['timestamp'],
+        'production_line': data['production_line']
+    })
+
+## How to Run the System
+
+### 1. Train the Model
+```
+python src/model/train.py
+```
+
+### 2. Start the API Server
+```
+python run_api.py
+```
+
+### 3. Start the Data Simulator
+```
+python utils/simulate_wind_turbine_data.py
+```
+
+### 4. Open the Dashboard
+- Visit [http://localhost:5001/](http://localhost:5001/) in your browser (or the port your API is running on).
+
+## Monitoring & Logging
+- All API requests, responses, and errors are logged to `app.log`.
+- Check system health at [http://localhost:5001/api/health](http://localhost:5001/api/health) (update port if needed).
+
+## Troubleshooting
+
+### 404 Errors from the Simulator
+- If you see `[ERR] 404: ... Not Found` from the simulator, it means the API endpoint is not available at the specified URL.
+- **Check which port your API server is running on.**
+  - When you start the API, look for a line like `Running on http://127.0.0.1:5000` or `http://127.0.0.1:5001`.
+- **Update the simulator's `API_URL`** in `utils/simulate_wind_turbine_data.py` to match the port:
+  ```python
+  API_URL = 'http://localhost:5000/api/predict'  # or 5001, as needed
+  ```
+- **Ensure `/api/predict` is defined** in your running Flask app.
+- **Restart both the API server and the simulator** after making changes.
+
+### Other Issues
+- If the dashboard is blank or spinning, check the browser console and network tab for errors.
+- Make sure the simulator is running and populating the database.
+- Check `app.log` for backend errors.
+
+## Notes
+- The system uses only wind turbine sensor data (no SECOM or external datasets).
+- The dashboard always shows all production lines from the config.
+- The anomaly detection model is simple and easily replaceable.
+- The system is designed for easy monitoring, maintainability, and extensibility.

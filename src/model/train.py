@@ -136,14 +136,12 @@ class AnomalyDetector:
 
 def main():
     """Main training function for wind turbine component anomaly detection."""
-    # Generate or load data
+    # Generate wind turbine data only
     generator = SensorDataGenerator()
-    data = generator.generate_mixed_data(n_samples=1000)
-    
+    data = generator.generate_synthetic_data(n_samples=1000)
     # Train model
     detector = AnomalyDetector()
     metrics = detector.train(data)
-    
     # Print training statistics
     print("\nTraining Statistics (Wind Turbine Component Factory):")
     print(f"Model Version: {detector.model_version}")
