@@ -51,6 +51,16 @@ A real-time anomaly detection system for wind turbine component manufacturing fa
    python -m utils.simulate_wind_turbine_data
    ```  
 
+
+4. **Start the data simulator (in a new terminal):**
+   ```bash
+   python -m utils.simulate_wind_turbine_data
+   ```
+
+5. **Access the dashboard:**
+   Open your browser and go to `http://localhost:5001`
+
+
 - **Sensor Data**: Simulated wind turbine sensor data (temperature, humidity, sound)
 - **Data Ingestion**: Python script generates and POSTs data to the API
 - **Data Storage**: SQLite database for persistence
@@ -138,9 +148,6 @@ Anomaly detection/
 └── README.md                        # Project documentation
 ```
 
-
-4. **Access the dashboard:**
-   Open your web browser and navigate to `http://localhost:5001`
 
 ### Data Management
 
