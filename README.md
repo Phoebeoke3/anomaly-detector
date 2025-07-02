@@ -2,31 +2,54 @@
 
 A real-time anomaly detection system for wind turbine component manufacturing facilities, featuring sensor data monitoring, machine learning-based anomaly detection, and an interactive dashboard for factory managers and shop floor employees.
 
-## Quick Start
+## Installation
 
-1. **Install dependencies:**
+### Prerequisites
+- Python 3.7 or higher
+- pip (Python package installer)
+
+### Setup Instructions
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Phoebeoke3/anomaly-detector
+   cd anomaly-detection
+   ```
+
+   2. **Create and activate a virtual environment:**
+   ```bash
+   # Windows
+   python -m venv venv
+   .\venv\Scripts\activate
+
+   # Linux/Mac
+   python -m venv venv
+   source venv/bin/activate
+   ```
+
+3. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
 
-2. **Start the API server:**
+## Usage
+
+### Starting the System
+
+1. **Start the API server (port 5000):**
    ```bash
    python -m utils.run_api
    ```
 
-3. **Start the dashboard:**
+2. **Start the dashboard server (port 5001):**
    ```bash
    python -m utils.run_dashboard
    ```
 
-4. **Start the data simulator (in a new terminal):**
+3. **Start the data simulator (in a new terminal):**
    ```bash
    python -m utils.simulate_wind_turbine_data
-   ```
-
-5. **Access the dashboard:**
-   Open your browser and go to `http://localhost:5001`
-
+   ```  
 
 - **Sensor Data**: Simulated wind turbine sensor data (temperature, humidity, sound)
 - **Data Ingestion**: Python script generates and POSTs data to the API
@@ -115,54 +138,6 @@ Anomaly detection/
 └── README.md                        # Project documentation
 ```
 
-## Installation
-
-### Prerequisites
-- Python 3.7 or higher
-- pip (Python package installer)
-
-### Setup Instructions
-
-1. **Clone the repository:**
-   ```bash
-   git clone <https://github.com/Phoebeoke3/anomaly-detector>
-   cd anomaly-detection
-   ```
-
-2. **Create and activate a virtual environment:**
-   ```bash
-   # Windows
-   python -m venv venv
-   .\venv\Scripts\activate
-
-   # Linux/Mac
-   python -m venv venv
-   source venv/bin/activate
-   ```
-
-3. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-## Usage
-
-### Starting the System
-
-1. **Start the API server (port 5000):**
-   ```bash
-   python -m utils.run_api
-   ```
-
-2. **Start the dashboard server (port 5001):**
-   ```bash
-   python -m utils.run_dashboard
-   ```
-
-3. **Start the data simulator (in a new terminal):**
-   ```bash
-   python -m utils.simulate_wind_turbine_data
-   ```
 
 4. **Access the dashboard:**
    Open your web browser and navigate to `http://localhost:5001`
