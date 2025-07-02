@@ -2,7 +2,7 @@
 
 A real-time anomaly detection system for wind turbine component manufacturing facilities, featuring sensor data monitoring, machine learning-based anomaly detection, and an interactive dashboard for factory managers and shop floor employees.
 
-## 🚀 Quick Start
+## Quick Start
 
 1. **Install dependencies:**
    ```bash
@@ -27,17 +27,6 @@ A real-time anomaly detection system for wind turbine component manufacturing fa
 5. **Access the dashboard:**
    Open your browser and go to `http://localhost:5001`
 
-## System Architecture
-
-```
-flowchart LR
-    A[Sensor Data (Simulated)] -->|Stream| B[Data Ingestion Script]
-    B --> C[Data Storage (SQLite)]
-    B --> D[Anomaly Detection API (Flask)]
-    D --> E[Dashboard (Flask)]
-    D --> F[Monitoring & Logging]
-    E -->|User Feedback| D
-```
 
 - **Sensor Data**: Simulated wind turbine sensor data (temperature, humidity, sound)
 - **Data Ingestion**: Python script generates and POSTs data to the API
@@ -48,7 +37,7 @@ flowchart LR
 
 ## Features
 
-### 🎯 Core Functionality
+### Core Functionality
 - **Real-time monitoring** of wind turbine component manufacturing processes
 - **Machine learning-based anomaly detection** using Isolation Forest algorithm
 - **Interactive dashboard** with live sensor data visualization
@@ -57,7 +46,7 @@ flowchart LR
 - **Historical data tracking** with 24-hour data retention
 - **System health monitoring** with health check endpoints
 
-### 📊 Dashboard Features
+### Dashboard Features
 - **System Status**: Real-time status of anomaly detection model and system health
 - **Production Lines**: Live monitoring of wind turbine production lines with status indicators
 - **Sensor Data**: Real-time visualization of temperature, humidity, and sound level data
@@ -66,7 +55,7 @@ flowchart LR
 - **Data Export**: CSV export functionality for data analysis
 - **Responsive Design**: Works on desktop and mobile devices
 
-### 🔧 Technical Features
+### Technical Features
 - **RESTful API** with comprehensive endpoints
 - **Real-time data streaming** with configurable update frequency
 - **Database persistence** with SQLite for reliable data storage
@@ -136,7 +125,7 @@ Anomaly detection/
 
 1. **Clone the repository:**
    ```bash
-   git clone <repository-url>
+   git clone <https://github.com/Phoebeoke3/anomaly-detector>
    cd anomaly-detection
    ```
 
@@ -221,47 +210,6 @@ Anomaly detection/
 - `GET /api/dashboard-data` - Dashboard data API
 - `GET /export-csv` - Export data as CSV
 
-## Configuration
-
-The system is configured through `config/company_config.json`:
-
-```json
-{
-    "name": "PTech",
-    "facility": "Wind Turbine Manufacturing Plant",
-    "production_lines": [
-        {
-            "id": "turbine-line-1",
-            "name": "Blade Production Line",
-            "components": ["Blade", "Resin Infusion", "Curing Oven"],
-            "sensors": ["temperature", "humidity", "sound_level"]
-        },
-        {
-            "id": "turbine-line-2",
-            "name": "Nacelle Assembly Line",
-            "components": ["Nacelle", "Gearbox", "Generator"],
-            "sensors": ["temperature", "humidity", "sound_level"]
-        }
-    ],
-    "sensor_thresholds": {
-        "temperature": {
-            "min": 10,
-            "max": 40,
-            "warning": 30
-        },
-        "humidity": {
-            "min": 20,
-            "max": 80,
-            "warning": 60
-        },
-        "sound_level": {
-            "min": 40,
-            "max": 90,
-            "warning": 70
-        }
-    }
-}
-```
 
 ## Data Source and Simulation
 
@@ -363,11 +311,3 @@ For support, please:
 3. Open an issue in the repository
 4. Contact the development team
 
-## Recent Updates
-
-- ✅ Fixed dashboard JavaScript errors and API response handling
-- ✅ Improved system status and statistics display
-- ✅ Enhanced real-time data visualization
-- ✅ Added comprehensive error handling and debugging
-- ✅ Updated project structure and documentation
-- ✅ Improved data simulation and streaming capabilities
