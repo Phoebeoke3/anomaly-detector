@@ -282,11 +282,34 @@ class SimpleStreamProcessor:
             self.anomalies_detected += len(anomalies)
             self.processing_latency.append(time.time() - start_time)
             
+            # Send system statistics to dashboard
+            try:
+                from src.streaming.dashboard_integration import stream_integration
+                # Send processor-level statistics in the expected format
+                processor_stats = self.get_statistics()
+                # We need to estimate messages_sent since processor doesn't track it
+                # This will be updated by the manager-level statistics
+                stream_integration.add_system_statistics(processor_stats)
+            except ImportError:
+                pass  # Dashboard integration not available
+            
             # Clear processed window data
             self._clear_window(production_line)
             
             print(f"📊 Processed window for {production_line}: "
                   f"{len(data_points)} points, {len(anomalies)} anomalies")
+            
+            # Send to dashboard integration
+            try:
+                from src.streaming.dashboard_integration import stream_integration
+                stream_integration.add_window_result(window_result)
+                
+                # Send anomalies to dashboard
+                for anomaly in anomalies:
+                    stream_integration.add_anomaly_alert(anomaly)
+                    
+            except ImportError:
+                pass  # Dashboard integration not available
             
         except Exception as e:
             print(f"❌ Error processing window: {e}")
@@ -453,7 +476,26 @@ class SimpleStreamManager:
             self.is_running = True
             self.simulator.start()
             self.processor.start()
+            
+            # Start sending statistics to dashboard
+            self._start_stats_reporting()
+            
             print("✅ Simple stream processing system started")
+    
+    def _start_stats_reporting(self):
+        """Start periodic statistics reporting to dashboard."""
+        def stats_reporter():
+            while self.is_running:
+                try:
+                    from src.streaming.dashboard_integration import stream_integration
+                    stats = self.get_statistics()  # Manager-level stats, includes messages_sent
+                    stream_integration.add_system_statistics(stats)
+                except ImportError:
+                    pass  # Dashboard integration not available
+                except Exception as e:
+                    print(f"[WARN] Error reporting stats to dashboard: {e}")
+                time.sleep(2)
+        threading.Thread(target=stats_reporter, daemon=True).start()
     
     def stop(self):
         """Stop the stream processing system."""

@@ -256,6 +256,18 @@
             </div>
         </div>
 
+        <!-- Stream Processing Statistics -->
+        <div class="row">
+            <div class="col-12">
+                <div class="status-card">
+                    <h5>Stream Processing Statistics</h5>
+                    <div id="stream-processing-stats">
+                        <p>Loading stream processing data...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Production Lines -->
         <div class="row">
             <div class="col-12">
@@ -742,6 +754,18 @@
                     .catch(err => {
                         console.error('Error fetching production lines:', err);
                     });
+
+                // Get stream processing statistics
+                fetch(`/api/stream-processing-stats?_t=${timestamp}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('[DEBUG] Stream processing stats response:', data);
+                        updateStreamProcessingStats(data);
+                    })
+                    .catch(err => {
+                        console.error('Error fetching stream processing stats:', err);
+                        updateStreamProcessingStats({ status: 'error', message: 'Failed to load stream processing data' });
+                    });
             }
 
             // Update every 3 seconds for more responsive dashboard
@@ -758,6 +782,11 @@
                     fetchAndPlotHistory('humidity', charts.humidity);
                     fetchAndPlotHistory('sound_level', charts.sound);
                 }
+                // Force refresh of stream processing stats
+                fetch('/api/stream-processing-stats')
+                    .then(response => response.json())
+                    .then(data => updateStreamProcessingStats(data))
+                    .catch(err => console.error('Error refreshing stream stats:', err));
                 // Update debug time
                 document.getElementById('debug-time').textContent = new Date().toLocaleString();
             }
@@ -785,6 +814,95 @@
                 if (hasAnomaly) {
                     playBeep();
                 }
+            }
+
+            // Update stream processing statistics function
+            function updateStreamProcessingStats(data) {
+                console.log('[DEBUG] updateStreamProcessingStats called with:', data);
+                const container = document.getElementById('stream-processing-stats');
+                
+                if (!data || data.status === 'error' || data.status === 'not_available') {
+                    container.innerHTML = `
+                        <div class="alert alert-warning">
+                            <i class="bx bx-info-circle"></i> Stream processing data not available
+                            ${data.message ? `<br><small>${data.message}</small>` : ''}
+                        </div>
+                    `;
+                    return;
+                }
+                
+                if (data.status === 'not_initialized') {
+                    container.innerHTML = `
+                        <div class="alert alert-info">
+                            <i class="bx bx-info-circle"></i> Stream processing not initialized
+                            <br><small>Start the stream processing system to see real-time statistics</small>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                if (data.status === 'no_data') {
+                    container.innerHTML = `
+                        <div class="alert alert-info">
+                            <i class="bx bx-info-circle"></i> No stream processing data available yet
+                            <br><small>Data will appear once stream processing begins</small>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Display stream processing statistics
+                const statsHtml = `
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-value">${data.messages_sent || 0}</div>
+                                <div class="stat-label">Messages Sent</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-value">${data.messages_processed || 0}</div>
+                                <div class="stat-label">Messages Processed</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-value">${data.anomalies_detected || 0}</div>
+                                <div class="stat-label">Anomalies Detected</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-value">${data.windows_processed || 0}</div>
+                                <div class="stat-label">Windows Processed</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="stat-card">
+                                <div class="stat-value">${(data.processing_latency || 0).toFixed(3)}s</div>
+                                <div class="stat-label">Processing Latency</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stat-card">
+                                <div class="stat-value">${Object.keys(data.active_windows || {}).length}</div>
+                                <div class="stat-label">Active Windows</div>
+                            </div>
+                        </div>
+                    </div>
+                    ${data.last_updated ? `
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <small class="text-muted">Last updated: ${new Date(data.last_updated).toLocaleString()}</small>
+                        </div>
+                    </div>
+                    ` : ''}
+                `;
+                
+                container.innerHTML = statsHtml;
             }
 
             // Update system statistics function

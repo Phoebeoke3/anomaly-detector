@@ -4,7 +4,7 @@
 [![Flask](https://img.shields.io/badge/Flask-2.0.1-green.svg)](https://flask.palletsprojects.com/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A real-time anomaly detection system for wind turbine component manufacturing facilities, featuring sensor data monitoring, machine learning-based anomaly detection, and an interactive dashboard for factory managers and shop floor employees.
+A comprehensive real-time anomaly detection system for wind turbine component manufacturing facilities, featuring advanced sensor data monitoring, machine learning-based anomaly detection, stream processing capabilities, and an interactive dashboard for factory managers and shop floor employees.
 
 ## Table of Contents
 
@@ -17,6 +17,7 @@ A real-time anomaly detection system for wind turbine component manufacturing fa
   - [Core Functionality](#core-functionality)
   - [Dashboard Features](#dashboard-features)
   - [Technical Features](#technical-features)
+  - [Stream Processing Features](#stream-processing-features)
 - [Project Structure](#project-structure)
 - [Data Management](#data-management)
   - [Utility Commands](#utility-commands)
@@ -30,6 +31,7 @@ A real-time anomaly detection system for wind turbine component manufacturing fa
   - [Core Endpoints](#core-endpoints)
   - [Debug Endpoints](#debug-endpoints)
   - [Dashboard Endpoints](#dashboard-endpoints)
+  - [Stream Processing Endpoints](#stream-processing-endpoints)
 - [Data Source and Simulation](#data-source-and-simulation)
   - [Data Generation Parameters](#data-generation-parameters)
   - [Data Stream Features](#data-stream-features)
@@ -80,7 +82,7 @@ A real-time anomaly detection system for wind turbine component manufacturing fa
 
 ### Running the System
 
-#### Option 1: Complete System (Recommended)
+#### Option 1: Complete System with Stream Processing (Recommended)
 
 1. **Start the API server (port 5000):**
    ```bash
@@ -92,15 +94,23 @@ A real-time anomaly detection system for wind turbine component manufacturing fa
    python -m utils.run_dashboard
    ```
 
-3. **Start the data simulator (in a new terminal):**
+3. **Start stream processing with dashboard integration (in a new terminal):**
    ```bash
-   python -m utils.simulate_wind_turbine_data
+   python -m utils.run_streaming_with_dashboard --window-size 30 --anomaly-probability 0.1
    ```
 
 4. **Access the dashboard:**
    Open your browser and go to `http://localhost:5001`
 
-#### Option 2: Direct Server Start
+#### Option 2: Simple Stream Processing Only
+
+For testing stream processing without the web dashboard:
+
+```bash
+python utils/run_simple_streaming.py --window-size 30 --anomaly-probability 0.1
+```
+
+#### Option 3: Direct Server Start
 
 Alternatively, you can start the servers directly:
 
@@ -111,41 +121,29 @@ python src/api/main.py
 # Start dashboard server (in new terminal)
 python src/dashboard/main.py
 
-# Start data simulator (in new terminal)
-python -m utils.simulate_wind_turbine_data
-```
-
-#### Option 3: Stream Processing Only
-
-For advanced stream processing without the web dashboard:
-
-```bash
-# Simple stream processing (no external dependencies)
-python utils/run_simple_streaming.py
-
-# Advanced Kafka-based stream processing
-python utils/run_advanced_streaming.py
+# Start stream processing (in new terminal)
+python -m utils.run_streaming_with_dashboard --window-size 30 --anomaly-probability 0.1
 ```
 
 ## System Overview
 
-The anomaly detection system consists of several interconnected components:
+The anomaly detection system consists of several interconnected components designed for production-ready wind turbine manufacturing:
 
-- **Sensor Data**: Simulated wind turbine sensor data (temperature, humidity, sound)
-- **Data Ingestion**: Python script generates and POSTs data to the API
-- **Data Storage**: SQLite database for persistence
-- **Anomaly Detection API**: Flask app that receives sensor data and returns anomaly scores
-- **Dashboard**: Interactive web interface for monitoring production lines and sensor data
+- **Sensor Data**: Realistic wind turbine sensor data simulation (temperature, humidity, sound levels)
+- **Data Ingestion**: Continuous data streaming with configurable intervals
+- **Data Storage**: SQLite database for persistence and historical analysis
+- **Anomaly Detection API**: Flask-based REST API with real-time ML predictions
 - **Advanced Stream Processing**: Real-time data processing with windowing and statistical analysis
-- **Monitoring & Logging**: Comprehensive logging of all API requests, predictions, and errors
+- **Dashboard**: Interactive web interface for monitoring production lines and sensor data
+- **Monitoring & Logging**: Comprehensive logging of all API requests, predictions, and system health
 
 ### Current System Status
 
 ✅ **API Server**: Running on port 5000 with real-time anomaly detection  
 ✅ **Dashboard Server**: Running on port 5001 with live data visualization  
-✅ **Data Simulator**: Continuously generating sensor data  
-✅ **Stream Processing**: Advanced IoT data processing with windowing  
+✅ **Stream Processing**: Advanced IoT data processing with windowing and statistical analysis  
 ✅ **Database**: SQLite storage with real-time data persistence  
+✅ **Real-time Monitoring**: Live dashboard with stream processing statistics  
 
 **Access your dashboard at: `http://localhost:5001`**
 
@@ -159,6 +157,7 @@ The anomaly detection system consists of several interconnected components:
 - **Configurable sensor thresholds** for different manufacturing conditions
 - **Historical data tracking** with 24-hour data retention
 - **System health monitoring** with health check endpoints
+- **Production-ready architecture** with error handling and scalability
 
 ### Dashboard Features
 - **System Status**: Real-time status of anomaly detection model and system health
@@ -166,6 +165,7 @@ The anomaly detection system consists of several interconnected components:
 - **Sensor Data**: Real-time visualization of temperature, humidity, and sound level data
 - **Anomaly Analysis**: Live anomaly score distribution and historical trends
 - **System Statistics**: Total production lines, normal/warning/critical status counts, and average anomaly scores
+- **Stream Processing Statistics**: Real-time metrics from stream processing system
 - **Data Export**: CSV export functionality for data analysis
 - **Responsive Design**: Works on desktop and mobile devices
 
@@ -181,6 +181,15 @@ The anomaly detection system consists of several interconnected components:
 - **State management** for complex stream operations
 - **Live Dashboard** with real-time data visualization
 - **Multi-production line monitoring** (blade production, nacelle assembly)
+
+### Stream Processing Features
+- **Real-time windowing**: Time-based and count-based batch processing
+- **Statistical anomaly detection**: Multiple anomaly types (outliers, spikes, drift, noise)
+- **State management**: Processing state across window operations
+- **Backpressure handling**: Automatic flow control to prevent system overload
+- **Real-time monitoring**: Live statistics and health monitoring
+- **Dashboard integration**: Stream processing results displayed in real-time dashboard
+- **Configurable parameters**: Window sizes, anomaly probabilities, processing intervals
 
 ## Project Structure
 
@@ -219,8 +228,10 @@ anomaly-detection/
 │   │   ├── database_model.py        # Database model operations
 │   │   └── sensor_model.py          # Sensor data model
 │   ├── streaming/
+│   │   ├── dashboard_integration.py # Stream processing dashboard integration
 │   │   ├── kafka_producer.py        # Advanced Kafka producer with backpressure
 │   │   ├── kafka_consumer.py        # Stream processor with windowing
+│   │   ├── mock_kafka.py            # Mock Kafka implementation for development
 │   │   ├── stream_manager.py        # Stream processing orchestration
 │   │   └── __init__.py              # Streaming package initialization
 │   └── views/
@@ -230,12 +241,15 @@ anomaly-detection/
 │           ├── index.html           # Main dashboard
 │           └── predictions.html     # Predictions page
 ├── utils/
+│   ├── check_db.py                  # Database checking utility
 │   ├── check_sensor_data.py         # Sensor data validation
 │   ├── run_api.py                   # API server runner
 │   ├── run_dashboard.py             # Dashboard server runner
+│   ├── run_advanced_streaming.py    # Advanced stream processing runner
+│   ├── run_simple_streaming.py      # Simple stream processing runner
+│   ├── run_streaming_with_dashboard.py # Stream processing with dashboard integration
 │   ├── setup_kaggle.py              # Kaggle dataset setup
-│   ├── simulate_wind_turbine_data.py # Data simulation runner
-│   └── run_advanced_streaming.py    # Advanced stream processing runner
+│   └── simulate_wind_turbine_data.py # Data simulation runner
 ├── app.log                          # Application logs
 ├── requirements.txt                 # Python dependencies
 └── README.md                        # Project documentation
@@ -273,26 +287,42 @@ anomaly-detection/
 ## Advanced Stream Processing
 
 ### Overview
-The system now includes advanced stream processing capabilities using Apache Kafka for robust, scalable IoT data processing:
+The system includes advanced stream processing capabilities designed for production IoT environments:
 
 ### Features
-- **Apache Kafka Integration**: Reliable message queuing and stream processing
+- **Apache Kafka Integration**: Reliable message queuing and stream processing (with mock fallback)
 - **Advanced Windowing**: Time-based and count-based windowing for batch processing
 - **Backpressure Handling**: Automatic flow control to prevent system overload
 - **State Management**: Maintains processing state across window operations
 - **Real-time Anomaly Detection**: Statistical outlier detection within windows
 - **Fault Tolerance**: Error recovery and graceful degradation
 - **Comprehensive Monitoring**: Real-time statistics and health monitoring
-- **Custom Alert Handlers**: Extensible alert system for anomalies
+- **Dashboard Integration**: Stream processing results displayed in real-time dashboard
+- **Multiple Anomaly Types**: Statistical outliers, spikes, drift, and noise detection
 
 ### Running Advanced Stream Processing
 
-#### Option 1: Simple Stream Processing (No Kafka Required)
+#### Option 1: Stream Processing with Dashboard Integration (Recommended)
 
-For development, testing, and demonstrations without requiring Kafka:
+For complete system with real-time dashboard integration:
 
 ```bash
-python utils/run_simple_streaming.py
+python -m utils.run_streaming_with_dashboard --window-size 30 --anomaly-probability 0.1
+```
+
+**Features:**
+- Real-time stream processing with dashboard integration
+- Live statistics displayed in dashboard
+- Configurable window sizes and anomaly probabilities
+- Multiple production line monitoring
+- Real-time anomaly alerts
+
+#### Option 2: Simple Stream Processing (No Dashboard)
+
+For development and testing without web dashboard:
+
+```bash
+python utils/run_simple_streaming.py --window-size 30 --anomaly-probability 0.1
 ```
 
 **Features:**
@@ -303,7 +333,7 @@ python utils/run_simple_streaming.py
 - Real-time monitoring and statistics
 - No external dependencies
 
-#### Option 2: Full Kafka Stream Processing
+#### Option 3: Full Kafka Stream Processing
 
 For production-like environments with Apache Kafka:
 
@@ -317,67 +347,60 @@ For production-like environments with Apache Kafka:
    python utils/run_advanced_streaming.py
    ```
 
-3. **Customize stream processing parameters:**
-   ```bash
-   # Time-based windowing (60-second windows)
-   python utils/run_advanced_streaming.py --window-type time --window-size 60
-   
-   # Count-based windowing (100 messages per window)
-   python utils/run_advanced_streaming.py --window-type count --window-size 100
-   
-   # Custom anomaly probability
-   python utils/run_advanced_streaming.py --anomaly-probability 0.1
-   
-   # Different processing modes
-   python utils/run_advanced_streaming.py --mode batch
-   ```
+### Stream Processing Configuration
 
-**Simple Stream Processing Configuration:**
-   ```bash
-   # Time-based windowing (30-second windows)
-   python utils/run_simple_streaming.py --window-type time --window-size 30
-   
-   # Count-based windowing (50 messages per window)
-   python utils/run_simple_streaming.py --window-type count --window-size 50
-   
-   # Faster data generation (0.5 second intervals)
-   python utils/run_simple_streaming.py --simulation-interval 0.5
-   
-   # Higher anomaly probability (10%)
-   python utils/run_simple_streaming.py --anomaly-probability 0.1
-   ```
+**Time-based windowing (30-second windows):**
+```bash
+python -m utils.run_streaming_with_dashboard --window-type time --window-size 30
+```
+
+**Count-based windowing (50 messages per window):**
+```bash
+python -m utils.run_streaming_with_dashboard --window-type count --window-size 50
+```
+
+**Faster data generation (0.5 second intervals):**
+```bash
+python -m utils.run_streaming_with_dashboard --simulation-interval 0.5
+```
+
+**Higher anomaly probability (10%):**
+```bash
+python -m utils.run_streaming_with_dashboard --anomaly-probability 0.1
+```
 
 ### Stream Processing Components
-
-#### Kafka Producer (`kafka_producer.py`)
-- **Backpressure Management**: Internal queue with configurable size limits
-- **Batch Processing**: Configurable batch sizes and linger times
-- **Error Handling**: Automatic retries and error recovery
-- **Realistic Data Generation**: Advanced sensor simulation with trends and seasonality
-
-#### Stream Processor (`kafka_consumer.py`)
-- **Windowing**: Time-based and count-based window processing
-- **Statistical Analysis**: Real-time calculation of window statistics
-- **Anomaly Detection**: Statistical outlier detection within windows
-- **State Management**: Maintains processing state across operations
 
 #### Stream Manager (`stream_manager.py`)
 - **Orchestration**: Coordinates producer, consumer, and simulator
 - **Health Monitoring**: Real-time system health checks
 - **Alert Management**: Extensible alert handler system
 - **Statistics Collection**: Comprehensive performance metrics
+- **Dashboard Integration**: Real-time statistics reporting
+
+#### Stream Processor (`kafka_consumer.py`)
+- **Windowing**: Time-based and count-based window processing
+- **Statistical Analysis**: Real-time calculation of window statistics
+- **Anomaly Detection**: Statistical outlier detection within windows
+- **State Management**: Maintains processing state across operations
+- **Multiple Anomaly Types**: Outliers, spikes, drift, and noise detection
+
+#### Dashboard Integration (`dashboard_integration.py`)
+- **Real-time Statistics**: Stream processing metrics sent to dashboard
+- **Database Storage**: Stream processing results stored for historical analysis
+- **API Endpoints**: Stream processing statistics available via REST API
+- **Live Updates**: Real-time dashboard updates with stream processing data
 
 ### Configuration Options
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `--kafka-servers` | Kafka bootstrap servers | `localhost:9092` |
-| `--topic` | Kafka topic name | `sensor-data` |
 | `--window-type` | Window type (time/count) | `time` |
 | `--window-size` | Window size (seconds/count) | `60` |
 | `--simulation-interval` | Data generation interval | `1.0s` |
 | `--anomaly-probability` | Anomaly injection probability | `0.05` |
-| `--mode` | Processing mode | `real_time` |
+| `--kafka-servers` | Kafka bootstrap servers | `localhost:9092` |
+| `--topic` | Kafka topic name | `sensor-data` |
 
 ## API Endpoints
 
@@ -400,6 +423,11 @@ For production-like environments with Apache Kafka:
 - `GET /api/dashboard-data` - Dashboard data API
 - `GET /export-csv` - Export data as CSV
 
+### Stream Processing Endpoints
+- `GET /api/stream-processing-stats` - Get real-time stream processing statistics
+- `GET /api/stream-anomalies` - Get recent stream processing anomalies
+- `GET /api/stream-windows` - Get recent stream processing windows
+
 ## Data Source and Simulation
 
 The system uses simulated sensor data that mimics real wind turbine component manufacturing conditions:
@@ -410,10 +438,11 @@ The system uses simulated sensor data that mimics real wind turbine component ma
 - **Sound Level**: 40-90 dB (normal range for assembly operations)
 
 ### Data Stream Features
-- Continuous data generation with 1-second intervals
-- Realistic noise and patterns
-- Anomaly injection for testing
-- Multiple production line simulation
+- Continuous data generation with configurable intervals (1-second default)
+- Realistic noise and patterns with trends and seasonality
+- Anomaly injection for testing and validation
+- Multiple production line simulation (blade production, nacelle assembly)
+- Real-time data streaming with backpressure handling
 
 ## Dependencies
 
@@ -446,22 +475,28 @@ The system uses simulated sensor data that mimics real wind turbine component ma
    - Try accessing `http://127.0.0.1:5001` instead of `localhost:5001`
 
 2. **No data appearing in dashboard:**
-   - Make sure the data simulator is running
+   - Make sure the stream processing system is running
    - Check database connection and data insertion
    - Verify API endpoints are responding correctly
    - Check that the API server is receiving POST requests to `/api/predict`
 
-3. **404 errors from simulator:**
+3. **Stream processing statistics showing zeros:**
+   - Ensure stream processing with dashboard integration is running
+   - Check that the correct script is being used: `python -m utils.run_streaming_with_dashboard`
+   - Verify database tables are created correctly
+   - Check for import errors in stream processing modules
+
+4. **404 errors from simulator:**
    - Check which port your API server is running on
    - Update the simulator's `API_URL` in `utils/simulate_wind_turbine_data.py`
    - Ensure `/api/predict` endpoint is available
 
-4. **System status stuck loading:**
+5. **System status stuck loading:**
    - Check API response format
    - Verify all required fields are present in API responses
    - Check browser network tab for failed requests
 
-5. **Connection refused errors:**
+6. **Connection refused errors:**
    - Ensure servers are started in the correct order (API first, then dashboard)
    - Check that ports 5000 and 5001 are not being used by other applications
    - Verify firewall settings are not blocking the connections
@@ -477,6 +512,7 @@ The system uses simulated sensor data that mimics real wind turbine component ma
    - Test `/api/health` endpoint: `http://localhost:5000/api/health`
    - Check `/api/current-status` response format
    - Verify `/api/predict` is receiving POST requests
+   - Test stream processing stats: `http://localhost:5001/api/stream-processing-stats`
 
 3. **Database issues:**
    - Run `python utils/check_db.py` to verify database connection
@@ -488,7 +524,13 @@ The system uses simulated sensor data that mimics real wind turbine component ma
    - Check model loading in anomaly detection code
    - Look for sklearn warnings about feature names (these are normal)
 
-5. **Network connectivity:**
+5. **Stream processing issues:**
+   - Check that stream processing is running with dashboard integration
+   - Verify database tables for stream processing exist
+   - Check for import errors in stream processing modules
+   - Ensure the correct Python module path is used (`python -m utils.run_streaming_with_dashboard`)
+
+6. **Network connectivity:**
    - Use `netstat -an | findstr :500` to check if servers are listening
    - Test with `curl http://localhost:5000/api/health` or browser
    - Check if antivirus/firewall is blocking connections
@@ -502,6 +544,7 @@ The system uses simulated sensor data that mimics real wind turbine component ma
 - **Real-time dashboard**: Live monitoring at `http://localhost:5001`
 - **Stream processing stats**: Real-time statistics from stream processing systems
 - **API request monitoring**: Live tracking of POST requests to `/api/predict`
+- **Stream processing monitoring**: Real-time metrics and anomaly detection rates
 
 ## Contributing
 
@@ -539,12 +582,13 @@ For support, please:
 
 ## Changelog
 
-### Version 1.0.0
-- Initial release with anomaly detection system
-- Real-time dashboard with sensor monitoring
-- API endpoints for data ingestion and retrieval
-- Machine learning model with Isolation Forest algorithm
-- SQLite database for data persistence
+### Version 1.2.0 (Current)
+- **Advanced Stream Processing**: Real-time data processing with windowing and statistical analysis
+- **Dashboard Integration**: Stream processing statistics displayed in real-time dashboard
+- **Multiple Anomaly Types**: Statistical outliers, spikes, drift, and noise detection
+- **Production-Ready Features**: Error handling, backpressure, state management
+- **Comprehensive Monitoring**: Real-time statistics and health monitoring
+- **Enhanced Documentation**: Updated README with all current features
 
 ### Version 1.1.0
 - Advanced stream processing with Apache Kafka integration
@@ -557,6 +601,13 @@ For support, please:
 - Multi-production line monitoring (blade production, nacelle assembly)
 - Comprehensive error handling and fault tolerance
 - Production-ready stream processing architecture
+
+### Version 1.0.0
+- Initial release with anomaly detection system
+- Real-time dashboard with sensor monitoring
+- API endpoints for data ingestion and retrieval
+- Machine learning model with Isolation Forest algorithm
+- SQLite database for data persistence
 
 ---
 

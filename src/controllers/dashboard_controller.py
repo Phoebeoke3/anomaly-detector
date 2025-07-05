@@ -369,6 +369,98 @@ class DashboardController:
                         yield f'Error exporting predictions: {e}\n'
             return Response(generate(), mimetype='text/csv', headers={'Content-Disposition': 'attachment; filename=predictions.csv'})
         
+        @app.route('/api/stream-processing-stats')
+        def get_stream_processing_stats():
+            """Get stream processing statistics."""
+            try:
+                # Try to get stream processing data from database
+                stream_stats = {}
+                try:
+                    with self.database_model.get_connection() as conn:
+                        cursor = conn.cursor()
+                        
+                        # Get latest stream statistics
+                        cursor.execute('''
+                            SELECT messages_sent, messages_processed, anomalies_detected, 
+                                   windows_processed, processing_latency, active_windows, created_at
+                            FROM stream_statistics 
+                            ORDER BY created_at DESC 
+                            LIMIT 1
+                        ''')
+                        stats_row = cursor.fetchone()
+                        
+                        if stats_row:
+                            stream_stats = {
+                                'messages_sent': stats_row[0],
+                                'messages_processed': stats_row[1],
+                                'anomalies_detected': stats_row[2],
+                                'windows_processed': stats_row[3],
+                                'processing_latency': stats_row[4],
+                                'active_windows': json.loads(stats_row[5]) if stats_row[5] else {},
+                                'last_updated': stats_row[6]
+                            }
+                        
+                        # Get recent window processing results
+                        cursor.execute('''
+                            SELECT production_line, data_points, anomalies_detected, 
+                                   processing_time, created_at
+                            FROM stream_windows 
+                            ORDER BY created_at DESC 
+                            LIMIT 10
+                        ''')
+                        windows = cursor.fetchall()
+                        
+                        recent_windows = []
+                        for window in windows:
+                            recent_windows.append({
+                                'production_line': window[0],
+                                'data_points': window[1],
+                                'anomalies_detected': window[2],
+                                'processing_time': window[3],
+                                'timestamp': window[4]
+                            })
+                        
+                        # Get recent anomaly alerts
+                        cursor.execute('''
+                            SELECT timestamp, component_id, production_line, anomaly_type, 
+                                   severity, temperature, humidity, sound
+                            FROM stream_anomalies 
+                            ORDER BY created_at DESC 
+                            LIMIT 20
+                        ''')
+                        anomalies = cursor.fetchall()
+                        
+                        recent_anomalies = []
+                        for anomaly in anomalies:
+                            recent_anomalies.append({
+                                'timestamp': anomaly[0],
+                                'component_id': anomaly[1],
+                                'production_line': anomaly[2],
+                                'anomaly_type': anomaly[3],
+                                'severity': anomaly[4],
+                                'temperature': anomaly[5],
+                                'humidity': anomaly[6],
+                                'sound': anomaly[7]
+                            })
+                        
+                        stream_stats.update({
+                            'recent_windows': recent_windows,
+                            'recent_anomalies': recent_anomalies
+                        })
+                        
+                except Exception as e:
+                    logger.warning(f"Could not fetch stream processing stats: {e}")
+                    stream_stats = {
+                        'status': 'not_available',
+                        'message': 'Stream processing data not available'
+                    }
+                
+                return jsonify(stream_stats)
+                
+            except Exception as e:
+                logger.error(f"Error getting stream processing stats: {e}")
+                return jsonify({'error': str(e)}), 500
+        
         # Minimal health check route
         @app.route('/ping')
         def ping():
@@ -493,6 +585,46 @@ class DashboardController:
             # Get anomaly score distribution
             anomaly_scores = [item.get('anomaly_score', 0) for item in recent_data if item.get('anomaly_score') is not None]
             
+            # Get stream processing data
+            stream_data = {}
+            try:
+                # Get stream processing statistics from database
+                with self.database_model.get_connection() as conn:
+                    cursor = conn.cursor()
+                    
+                    # Check if stream tables exist
+                    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='stream_statistics'")
+                    if cursor.fetchone():
+                        # Get latest stream statistics
+                        cursor.execute('''
+                            SELECT messages_sent, messages_processed, anomalies_detected, 
+                                   windows_processed, processing_latency, active_windows, created_at
+                            FROM stream_statistics 
+                            ORDER BY created_at DESC 
+                            LIMIT 1
+                        ''')
+                        stats_row = cursor.fetchone()
+                        
+                        if stats_row:
+                            stream_data = {
+                                'messages_sent': stats_row[0],
+                                'messages_processed': stats_row[1],
+                                'anomalies_detected': stats_row[2],
+                                'windows_processed': stats_row[3],
+                                'processing_latency': stats_row[4],
+                                'active_windows': json.loads(stats_row[5]) if stats_row[5] else {},
+                                'last_updated': stats_row[6],
+                                'status': 'active'
+                            }
+                        else:
+                            stream_data = {'status': 'no_data'}
+                    else:
+                        stream_data = {'status': 'not_initialized'}
+                        
+            except Exception as e:
+                logger.warning(f"Could not fetch stream processing data: {e}")
+                stream_data = {'status': 'error', 'message': str(e)}
+            
             return jsonify({
                 'recent_data': recent_data,
                 'production_lines': production_status,
@@ -507,6 +639,7 @@ class DashboardController:
                     'warning_count': len([s for s in anomaly_scores if 0.3 <= s < 0.6]),
                     'anomaly_count': len([s for s in anomaly_scores if s >= 0.6])
                 },
+                'stream_processing': stream_data,
                 'timestamp': datetime.now().isoformat()
             })
             
