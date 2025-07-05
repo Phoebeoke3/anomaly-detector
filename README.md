@@ -6,6 +6,41 @@
 
 A real-time anomaly detection system for wind turbine component manufacturing facilities, featuring sensor data monitoring, machine learning-based anomaly detection, and an interactive dashboard for factory managers and shop floor employees.
 
+## Table of Contents
+
+- [Quick Start](#quick-start)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Running the System](#running-the-system)
+- [System Overview](#system-overview)
+- [Features](#features)
+  - [Core Functionality](#core-functionality)
+  - [Dashboard Features](#dashboard-features)
+  - [Technical Features](#technical-features)
+- [Project Structure](#project-structure)
+- [Data Management](#data-management)
+  - [Utility Commands](#utility-commands)
+- [API Endpoints](#api-endpoints)
+  - [Core Endpoints](#core-endpoints)
+  - [Debug Endpoints](#debug-endpoints)
+  - [Dashboard Endpoints](#dashboard-endpoints)
+- [Data Source and Simulation](#data-source-and-simulation)
+  - [Data Generation Parameters](#data-generation-parameters)
+  - [Data Stream Features](#data-stream-features)
+- [Dependencies](#dependencies)
+  - [Core Dependencies](#core-dependencies)
+  - [Frontend Dependencies](#frontend-dependencies)
+- [Troubleshooting](#troubleshooting)
+  - [Common Issues](#common-issues)
+  - [Debug Steps](#debug-steps)
+- [Monitoring & Logging](#monitoring--logging)
+- [Contributing](#contributing)
+  - [Development Guidelines](#development-guidelines)
+- [License](#license)
+- [Support](#support)
+- [Related Documentation](#related-documentation)
+- [Changelog](#changelog)
+
 ## Quick Start
 
 ### Prerequisites
