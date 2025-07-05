@@ -17,7 +17,7 @@ A real-time anomaly detection system for wind turbine component manufacturing fa
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/Phoebeoke3/anomaly-detector
+   git clone https://github.com/Phoebeoke3/anomaly-detection
    cd anomaly-detection
    ```
 
