@@ -20,6 +20,12 @@ A real-time anomaly detection system for wind turbine component manufacturing fa
 - [Project Structure](#project-structure)
 - [Data Management](#data-management)
   - [Utility Commands](#utility-commands)
+- [Advanced Stream Processing](#advanced-stream-processing)
+  - [Overview](#overview)
+  - [Features](#features-1)
+  - [Running Advanced Stream Processing](#running-advanced-stream-processing)
+  - [Stream Processing Components](#stream-processing-components)
+  - [Configuration Options](#configuration-options)
 - [API Endpoints](#api-endpoints)
   - [Core Endpoints](#core-endpoints)
   - [Debug Endpoints](#debug-endpoints)
@@ -125,10 +131,14 @@ The anomaly detection system consists of several interconnected components:
 
 ### Technical Features
 - **RESTful API** with comprehensive endpoints
+- **Advanced Stream Processing** with Apache Kafka integration
 - **Real-time data streaming** with configurable update frequency
 - **Database persistence** with SQLite for reliable data storage
 - **Model versioning** with automatic model saving and loading
 - **Error handling** with detailed logging and debugging endpoints
+- **Backpressure handling** and fault tolerance
+- **Time-based and count-based windowing** for batch processing
+- **State management** for complex stream operations
 
 ## Project Structure
 
@@ -166,6 +176,11 @@ anomaly-detection/
 │   │   ├── anomaly_model.py         # Anomaly detection model
 │   │   ├── database_model.py        # Database model operations
 │   │   └── sensor_model.py          # Sensor data model
+│   ├── streaming/
+│   │   ├── kafka_producer.py        # Advanced Kafka producer with backpressure
+│   │   ├── kafka_consumer.py        # Stream processor with windowing
+│   │   ├── stream_manager.py        # Stream processing orchestration
+│   │   └── __init__.py              # Streaming package initialization
 │   └── views/
 │       ├── static/                  # CSS, JS, and static assets
 │       └── templates/
@@ -177,7 +192,8 @@ anomaly-detection/
 │   ├── run_api.py                   # API server runner
 │   ├── run_dashboard.py             # Dashboard server runner
 │   ├── setup_kaggle.py              # Kaggle dataset setup
-│   └── simulate_wind_turbine_data.py # Data simulation runner
+│   ├── simulate_wind_turbine_data.py # Data simulation runner
+│   └── run_advanced_streaming.py    # Advanced stream processing runner
 ├── app.log                          # Application logs
 ├── requirements.txt                 # Python dependencies
 └── README.md                        # Project documentation
@@ -211,6 +227,80 @@ anomaly-detection/
   ```bash
   python utils/check_sensor_data.py
   ```
+
+## Advanced Stream Processing
+
+### Overview
+The system now includes advanced stream processing capabilities using Apache Kafka for robust, scalable IoT data processing:
+
+### Features
+- **Apache Kafka Integration**: Reliable message queuing and stream processing
+- **Advanced Windowing**: Time-based and count-based windowing for batch processing
+- **Backpressure Handling**: Automatic flow control to prevent system overload
+- **State Management**: Maintains processing state across window operations
+- **Real-time Anomaly Detection**: Statistical outlier detection within windows
+- **Fault Tolerance**: Error recovery and graceful degradation
+- **Comprehensive Monitoring**: Real-time statistics and health monitoring
+- **Custom Alert Handlers**: Extensible alert system for anomalies
+
+### Running Advanced Stream Processing
+
+1. **Start Kafka (using Docker):**
+   ```bash
+   docker run -p 9092:9092 apache/kafka:2.13-3.4.0
+   ```
+
+2. **Run the advanced stream processing system:**
+   ```bash
+   python utils/run_advanced_streaming.py
+   ```
+
+3. **Customize stream processing parameters:**
+   ```bash
+   # Time-based windowing (60-second windows)
+   python utils/run_advanced_streaming.py --window-type time --window-size 60
+   
+   # Count-based windowing (100 messages per window)
+   python utils/run_advanced_streaming.py --window-type count --window-size 100
+   
+   # Custom anomaly probability
+   python utils/run_advanced_streaming.py --anomaly-probability 0.1
+   
+   # Different processing modes
+   python utils/run_advanced_streaming.py --mode batch
+   ```
+
+### Stream Processing Components
+
+#### Kafka Producer (`kafka_producer.py`)
+- **Backpressure Management**: Internal queue with configurable size limits
+- **Batch Processing**: Configurable batch sizes and linger times
+- **Error Handling**: Automatic retries and error recovery
+- **Realistic Data Generation**: Advanced sensor simulation with trends and seasonality
+
+#### Stream Processor (`kafka_consumer.py`)
+- **Windowing**: Time-based and count-based window processing
+- **Statistical Analysis**: Real-time calculation of window statistics
+- **Anomaly Detection**: Statistical outlier detection within windows
+- **State Management**: Maintains processing state across operations
+
+#### Stream Manager (`stream_manager.py`)
+- **Orchestration**: Coordinates producer, consumer, and simulator
+- **Health Monitoring**: Real-time system health checks
+- **Alert Management**: Extensible alert handler system
+- **Statistics Collection**: Comprehensive performance metrics
+
+### Configuration Options
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--kafka-servers` | Kafka bootstrap servers | `localhost:9092` |
+| `--topic` | Kafka topic name | `sensor-data` |
+| `--window-type` | Window type (time/count) | `time` |
+| `--window-size` | Window size (seconds/count) | `60` |
+| `--simulation-interval` | Data generation interval | `1.0s` |
+| `--anomaly-probability` | Anomaly injection probability | `0.05` |
+| `--mode` | Processing mode | `real_time` |
 
 ## API Endpoints
 
@@ -258,6 +348,10 @@ The system uses simulated sensor data that mimics real wind turbine component ma
 - **joblib 1.0.1** - Model persistence
 - **requests 2.25.1** - HTTP client for API calls
 - **python-dotenv 0.19.0** - Environment management
+
+### Stream Processing Dependencies
+- **kafka-python 2.0.2** - Apache Kafka client for Python
+- **confluent-kafka 1.8.2** - High-performance Kafka client
 
 ### Frontend Dependencies
 - **Chart.js** - Interactive charts and visualizations
