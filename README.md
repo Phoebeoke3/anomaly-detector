@@ -1,14 +1,19 @@
 # Anomaly Detection System for Wind Turbine Component Manufacturing
 
+[![Python](https://img.shields.io/badge/Python-3.7+-blue.svg)](https://www.python.org/downloads/)
+[![Flask](https://img.shields.io/badge/Flask-2.0.1-green.svg)](https://flask.palletsprojects.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A real-time anomaly detection system for wind turbine component manufacturing facilities, featuring sensor data monitoring, machine learning-based anomaly detection, and an interactive dashboard for factory managers and shop floor employees.
 
-## Installation
+## Quick Start
 
 ### Prerequisites
 - Python 3.7 or higher
 - pip (Python package installer)
+- Git
 
-### Setup Instructions
+### Installation
 
 1. **Clone the repository:**
    ```bash
@@ -16,7 +21,7 @@ A real-time anomaly detection system for wind turbine component manufacturing fa
    cd anomaly-detection
    ```
 
-   2. **Create and activate a virtual environment:**
+2. **Create and activate a virtual environment:**
    ```bash
    # Windows
    python -m venv venv
@@ -32,16 +37,14 @@ A real-time anomaly detection system for wind turbine component manufacturing fa
    pip install -r requirements.txt
    ```
 
-## Usage
-
-### Starting the System
+### Running the System
 
 1. **Start the API server (port 5000):**
    ```bash
    python -m utils.run_api
    ```
 
-2. **Start the dashboard server (port 5001):**
+2. **Start the dashboard server (port 5001) in a new terminal:**
    ```bash
    python -m utils.run_dashboard
    ```
@@ -49,17 +52,14 @@ A real-time anomaly detection system for wind turbine component manufacturing fa
 3. **Start the data simulator (in a new terminal):**
    ```bash
    python -m utils.simulate_wind_turbine_data
-   ```  
-
-
-4. **Start the data simulator (in a new terminal):**
-   ```bash
-   python -m utils.simulate_wind_turbine_data
    ```
 
-5. **Access the dashboard:**
+4. **Access the dashboard:**
    Open your browser and go to `http://localhost:5001`
 
+## System Overview
+
+The anomaly detection system consists of several interconnected components:
 
 - **Sensor Data**: Simulated wind turbine sensor data (temperature, humidity, sound)
 - **Data Ingestion**: Python script generates and POSTs data to the API
@@ -98,7 +98,7 @@ A real-time anomaly detection system for wind turbine component manufacturing fa
 ## Project Structure
 
 ```
-Anomaly detection/
+anomaly-detection/
 ├── config/
 │   └── company_config.json          # Company and facility configuration
 ├── data/
@@ -148,8 +148,9 @@ Anomaly detection/
 └── README.md                        # Project documentation
 ```
 
+## Data Management
 
-### Data Management
+### Utility Commands
 
 - **View data samples:**
   ```bash
@@ -169,6 +170,11 @@ Anomaly detection/
 - **Setup Kaggle datasets:**
   ```bash
   python utils/setup_kaggle.py
+  ```
+
+- **Check sensor data:**
+  ```bash
+  python utils/check_sensor_data.py
   ```
 
 ## API Endpoints
@@ -191,7 +197,6 @@ Anomaly detection/
 - `GET /predictions` - Predictions page
 - `GET /api/dashboard-data` - Dashboard data API
 - `GET /export-csv` - Export data as CSV
-
 
 ## Data Source and Simulation
 
@@ -275,21 +280,48 @@ The system uses simulated sensor data that mimics real wind turbine component ma
 
 ## Contributing
 
+We welcome contributions! Please follow these steps:
+
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
+### Development Guidelines
+- Follow PEP 8 style guidelines
+- Add tests for new features
+- Update documentation as needed
+- Ensure all tests pass before submitting
+
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Support
 
 For support, please:
+
 1. Check the troubleshooting section above
 2. Review the logs in `app.log`
 3. Open an issue in the repository
 4. Contact the development team
+
+## Related Documentation
+
+- [System Architecture](docs/architecture.md)
+- [Data Streaming Architecture](docs/streaming_architecture.md)
+
+## Changelog
+
+### Version 1.0.0
+- Initial release with anomaly detection system
+- Real-time dashboard with sensor monitoring
+- API endpoints for data ingestion and retrieval
+- Machine learning model with Isolation Forest algorithm
+- SQLite database for data persistence
+
+---
+
+**Note**: This system is designed for educational and demonstration purposes. For production use, additional security measures, error handling, and scalability considerations should be implemented.
 
