@@ -80,6 +80,8 @@ A real-time anomaly detection system for wind turbine component manufacturing fa
 
 ### Running the System
 
+#### Option 1: Complete System (Recommended)
+
 1. **Start the API server (port 5000):**
    ```bash
    python -m utils.run_api
@@ -98,6 +100,33 @@ A real-time anomaly detection system for wind turbine component manufacturing fa
 4. **Access the dashboard:**
    Open your browser and go to `http://localhost:5001`
 
+#### Option 2: Direct Server Start
+
+Alternatively, you can start the servers directly:
+
+```bash
+# Start API server
+python src/api/main.py
+
+# Start dashboard server (in new terminal)
+python src/dashboard/main.py
+
+# Start data simulator (in new terminal)
+python -m utils.simulate_wind_turbine_data
+```
+
+#### Option 3: Stream Processing Only
+
+For advanced stream processing without the web dashboard:
+
+```bash
+# Simple stream processing (no external dependencies)
+python utils/run_simple_streaming.py
+
+# Advanced Kafka-based stream processing
+python utils/run_advanced_streaming.py
+```
+
 ## System Overview
 
 The anomaly detection system consists of several interconnected components:
@@ -107,7 +136,18 @@ The anomaly detection system consists of several interconnected components:
 - **Data Storage**: SQLite database for persistence
 - **Anomaly Detection API**: Flask app that receives sensor data and returns anomaly scores
 - **Dashboard**: Interactive web interface for monitoring production lines and sensor data
+- **Advanced Stream Processing**: Real-time data processing with windowing and statistical analysis
 - **Monitoring & Logging**: Comprehensive logging of all API requests, predictions, and errors
+
+### Current System Status
+
+✅ **API Server**: Running on port 5000 with real-time anomaly detection  
+✅ **Dashboard Server**: Running on port 5001 with live data visualization  
+✅ **Data Simulator**: Continuously generating sensor data  
+✅ **Stream Processing**: Advanced IoT data processing with windowing  
+✅ **Database**: SQLite storage with real-time data persistence  
+
+**Access your dashboard at: `http://localhost:5001`**
 
 ## Features
 
@@ -131,7 +171,7 @@ The anomaly detection system consists of several interconnected components:
 
 ### Technical Features
 - **RESTful API** with comprehensive endpoints
-- **Advanced Stream Processing** with Apache Kafka integration
+- **Advanced Stream Processing** with Apache Kafka integration (with mock fallback)
 - **Real-time data streaming** with configurable update frequency
 - **Database persistence** with SQLite for reliable data storage
 - **Model versioning** with automatic model saving and loading
@@ -139,6 +179,8 @@ The anomaly detection system consists of several interconnected components:
 - **Backpressure handling** and fault tolerance
 - **Time-based and count-based windowing** for batch processing
 - **State management** for complex stream operations
+- **Live Dashboard** with real-time data visualization
+- **Multi-production line monitoring** (blade production, nacelle assembly)
 
 ## Project Structure
 
@@ -245,6 +287,26 @@ The system now includes advanced stream processing capabilities using Apache Kaf
 
 ### Running Advanced Stream Processing
 
+#### Option 1: Simple Stream Processing (No Kafka Required)
+
+For development, testing, and demonstrations without requiring Kafka:
+
+```bash
+python utils/run_simple_streaming.py
+```
+
+**Features:**
+- In-memory stream processing with threading
+- Realistic sensor data simulation with trends and seasonality
+- Time-based and count-based windowing
+- Statistical anomaly detection
+- Real-time monitoring and statistics
+- No external dependencies
+
+#### Option 2: Full Kafka Stream Processing
+
+For production-like environments with Apache Kafka:
+
 1. **Start Kafka (using Docker):**
    ```bash
    docker run -p 9092:9092 apache/kafka:2.13-3.4.0
@@ -268,6 +330,21 @@ The system now includes advanced stream processing capabilities using Apache Kaf
    
    # Different processing modes
    python utils/run_advanced_streaming.py --mode batch
+   ```
+
+**Simple Stream Processing Configuration:**
+   ```bash
+   # Time-based windowing (30-second windows)
+   python utils/run_simple_streaming.py --window-type time --window-size 30
+   
+   # Count-based windowing (50 messages per window)
+   python utils/run_simple_streaming.py --window-type count --window-size 50
+   
+   # Faster data generation (0.5 second intervals)
+   python utils/run_simple_streaming.py --simulation-interval 0.5
+   
+   # Higher anomaly probability (10%)
+   python utils/run_simple_streaming.py --anomaly-probability 0.1
    ```
 
 ### Stream Processing Components
@@ -366,11 +443,13 @@ The system uses simulated sensor data that mimics real wind turbine component ma
    - Ensure both API and dashboard servers are running
    - Check browser console for JavaScript errors
    - Verify the correct template is being served
+   - Try accessing `http://127.0.0.1:5001` instead of `localhost:5001`
 
 2. **No data appearing in dashboard:**
    - Make sure the data simulator is running
    - Check database connection and data insertion
    - Verify API endpoints are responding correctly
+   - Check that the API server is receiving POST requests to `/api/predict`
 
 3. **404 errors from simulator:**
    - Check which port your API server is running on
@@ -382,23 +461,37 @@ The system uses simulated sensor data that mimics real wind turbine component ma
    - Verify all required fields are present in API responses
    - Check browser network tab for failed requests
 
+5. **Connection refused errors:**
+   - Ensure servers are started in the correct order (API first, then dashboard)
+   - Check that ports 5000 and 5001 are not being used by other applications
+   - Verify firewall settings are not blocking the connections
+
 ### Debug Steps
 
 1. **Check server logs:**
    - Monitor `app.log` for backend errors
    - Check terminal output for server errors
+   - Look for successful API requests in the logs
 
 2. **Verify API endpoints:**
-   - Test `/api/health` endpoint
+   - Test `/api/health` endpoint: `http://localhost:5000/api/health`
    - Check `/api/current-status` response format
+   - Verify `/api/predict` is receiving POST requests
 
 3. **Database issues:**
    - Run `python utils/check_db.py` to verify database connection
    - Check if data is being inserted correctly
+   - Verify SQLite database file exists in `data/wind_turbine.db`
 
 4. **Model issues:**
    - Verify model files exist in `models/` directory
    - Check model loading in anomaly detection code
+   - Look for sklearn warnings about feature names (these are normal)
+
+5. **Network connectivity:**
+   - Use `netstat -an | findstr :500` to check if servers are listening
+   - Test with `curl http://localhost:5000/api/health` or browser
+   - Check if antivirus/firewall is blocking connections
 
 ## Monitoring & Logging
 
@@ -406,6 +499,9 @@ The system uses simulated sensor data that mimics real wind turbine component ma
 - **System health**: Check system health at `/api/health` endpoint
 - **Database monitoring**: Use debug endpoints to monitor data flow
 - **Performance monitoring**: Track API response times and system performance
+- **Real-time dashboard**: Live monitoring at `http://localhost:5001`
+- **Stream processing stats**: Real-time statistics from stream processing systems
+- **API request monitoring**: Live tracking of POST requests to `/api/predict`
 
 ## Contributing
 
@@ -449,6 +545,18 @@ For support, please:
 - API endpoints for data ingestion and retrieval
 - Machine learning model with Isolation Forest algorithm
 - SQLite database for data persistence
+
+### Version 1.1.0
+- Advanced stream processing with Apache Kafka integration
+- Mock Kafka implementation for development without external dependencies
+- Simple stream processing system with in-memory queues
+- Time-based and count-based windowing for batch processing
+- Statistical anomaly detection within streaming windows
+- Real-time monitoring and alerting system
+- Enhanced dashboard with live data visualization
+- Multi-production line monitoring (blade production, nacelle assembly)
+- Comprehensive error handling and fault tolerance
+- Production-ready stream processing architecture
 
 ---
 

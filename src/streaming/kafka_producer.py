@@ -3,15 +3,46 @@ import time
 import logging
 from datetime import datetime
 from typing import Dict, Any, Optional
-from kafka import KafkaProducer
-from kafka.errors import KafkaError, KafkaTimeoutError
 import threading
 from queue import Queue, Full
 import random
 
+# Try to import real Kafka, fall back to mock if not available
+try:
+    from kafka import KafkaProducer
+    from kafka.errors import KafkaError, KafkaTimeoutError
+    KAFKA_AVAILABLE = True
+    logger = logging.getLogger(__name__)
+except ImportError:
+    # Use mock Kafka implementation
+    from .mock_kafka import MockKafkaProducer as KafkaProducer
+    from .mock_kafka import MockFuture
+    KAFKA_AVAILABLE = False
+    logger = logging.getLogger(__name__)
+    logger.info("Real Kafka not available, using mock implementation")
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Alert handler functions
+def console_alert_handler(anomaly: Dict[str, Any]):
+    """Console alert handler for anomalies."""
+    print(f"🚨 CONSOLE ALERT: {anomaly.get('anomaly_type', 'unknown')} anomaly detected!")
+    print(f"   Component: {anomaly.get('component_id', 'unknown')}")
+    print(f"   Production Line: {anomaly.get('production_line', 'unknown')}")
+    print(f"   Severity: {anomaly.get('severity', 'unknown')}")
+    print(f"   Timestamp: {anomaly.get('timestamp', 'unknown')}")
+
+def database_alert_handler(anomaly: Dict[str, Any]):
+    """Database alert handler for anomalies."""
+    logger.info(f"Database alert: {anomaly.get('anomaly_type', 'unknown')} anomaly for "
+                f"component {anomaly.get('component_id', 'unknown')}")
+
+def email_alert_handler(anomaly: Dict[str, Any]):
+    """Email alert handler for anomalies."""
+    logger.info(f"Email alert: {anomaly.get('anomaly_type', 'unknown')} anomaly for "
+                f"component {anomaly.get('component_id', 'unknown')}")
 
 class SensorDataProducer:
     """Advanced Kafka producer for sensor data streaming with backpressure handling."""

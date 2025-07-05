@@ -3,13 +3,24 @@ import time
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional, Callable
-from kafka import KafkaConsumer
-from kafka.errors import KafkaError
 import threading
 from collections import deque, defaultdict
 import numpy as np
 from dataclasses import dataclass
 from enum import Enum
+
+# Try to import real Kafka, fall back to mock if not available
+try:
+    from kafka import KafkaConsumer
+    from kafka.errors import KafkaError
+    KAFKA_AVAILABLE = True
+    logger = logging.getLogger(__name__)
+except ImportError:
+    # Use mock Kafka implementation
+    from .mock_kafka import MockKafkaConsumer as KafkaConsumer
+    KAFKA_AVAILABLE = False
+    logger = logging.getLogger(__name__)
+    logger.info("Real Kafka not available, using mock implementation")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
