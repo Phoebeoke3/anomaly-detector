@@ -25,7 +25,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 def signal_handler(signum, frame):
     """Handle shutdown signals gracefully."""
-    print("\n🛑 Received shutdown signal. Stopping stream processing...")
+    print("\n Received shutdown signal. Stopping stream processing...")
     if hasattr(signal_handler, 'stream_processor'):
         signal_handler.stream_processor.stop()
     sys.exit(0)
@@ -52,14 +52,14 @@ class SimpleSensorSimulator:
             self.is_running = True
             self.thread = threading.Thread(target=self._simulation_worker, daemon=True)
             self.thread.start()
-            print("✅ Sensor simulation started")
+            print(" Sensor simulation started")
     
     def stop(self):
         """Stop the simulation."""
         self.is_running = False
         if self.thread:
             self.thread.join(timeout=5)
-        print("🛑 Sensor simulation stopped")
+        print(" Sensor simulation stopped")
     
     def _simulation_worker(self):
         """Worker thread for continuous sensor data generation."""
@@ -75,7 +75,7 @@ class SimpleSensorSimulator:
                 time.sleep(self.interval)
                 
             except Exception as e:
-                print(f"❌ Error in simulation: {e}")
+                print(f" Error in simulation: {e}")
                 time.sleep(self.interval)
     
     def _generate_realistic_data(self) -> Dict[str, Any]:
@@ -167,14 +167,14 @@ class SimpleStreamProcessor:
             self.is_running = True
             self.thread = threading.Thread(target=self._processing_worker, daemon=True)
             self.thread.start()
-            print("✅ Stream processor started")
+            print(" Stream processor started")
     
     def stop(self):
         """Stop the stream processor."""
         self.is_running = False
         if self.thread:
             self.thread.join(timeout=5)
-        print("🛑 Stream processor stopped")
+        print(" Stream processor stopped")
     
     def add_alert_handler(self, handler):
         """Add an alert handler."""
@@ -197,7 +197,7 @@ class SimpleStreamProcessor:
                 self._process_ready_windows()
                 
             except Exception as e:
-                print(f"❌ Error in processing: {e}")
+                print(f" Error in processing: {e}")
                 time.sleep(1)
     
     def _process_message(self, data: Dict[str, Any]):
@@ -221,7 +221,7 @@ class SimpleStreamProcessor:
             self.messages_processed += 1
             
         except Exception as e:
-            print(f"❌ Error processing message: {e}")
+            print(f" Error processing message: {e}")
     
     def _process_ready_windows(self):
         """Process windows that are ready."""
@@ -275,7 +275,7 @@ class SimpleStreamProcessor:
                     try:
                         handler(anomaly)
                     except Exception as e:
-                        print(f"❌ Error in alert handler: {e}")
+                        print(f" Error in alert handler: {e}")
             
             # Update statistics
             self.windows_processed += 1
@@ -312,7 +312,7 @@ class SimpleStreamProcessor:
                 pass  # Dashboard integration not available
             
         except Exception as e:
-            print(f"❌ Error processing window: {e}")
+            print(f" Error processing window: {e}")
     
     def _calculate_window_statistics(self, data_points: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Calculate statistics for a window of data points."""
@@ -480,7 +480,7 @@ class SimpleStreamManager:
             # Start sending statistics to dashboard
             self._start_stats_reporting()
             
-            print("✅ Simple stream processing system started")
+            print(" Simple stream processing system started")
     
     def _start_stats_reporting(self):
         """Start periodic statistics reporting to dashboard."""
@@ -502,7 +502,7 @@ class SimpleStreamManager:
         self.is_running = False
         self.simulator.stop()
         self.processor.stop()
-        print("🛑 Simple stream processing system stopped")
+        print(" Simple stream processing system stopped")
     
     def add_alert_handler(self, handler):
         """Add a custom alert handler."""
@@ -510,7 +510,7 @@ class SimpleStreamManager:
     
     def _console_alert_handler(self, anomaly: Dict[str, Any]):
         """Default console alert handler."""
-        print(f"🚨 ALERT: {anomaly['anomaly_type']} anomaly detected!")
+        print(f" ALERT: {anomaly['anomaly_type']} anomaly detected!")
         print(f"   Component: {anomaly['component_id']}")
         print(f"   Production Line: {anomaly['production_line']}")
         print(f"   Severity: {anomaly['severity']}")
@@ -555,7 +555,7 @@ def main():
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
     
-    print("🚀 Starting Simple Stream Processing System")
+    print(" Starting Simple Stream Processing System")
     print("=" * 60)
     print(f"Window Type: {args.window_type}")
     print(f"Window Size: {args.window_size}")
@@ -578,8 +578,8 @@ def main():
         # Start the system
         stream_manager.start()
         
-        print("✅ Stream processing system started successfully!")
-        print("📊 Monitoring system statistics...")
+        print(" Stream processing system started successfully!")
+        print(" Monitoring system statistics...")
         print("Press Ctrl+C to stop")
         
         # Monitor and display statistics
@@ -591,7 +591,7 @@ def main():
             
             # Only display if there's activity
             if stats['summary']['total_messages_processed'] > 0:
-                print(f"\n📈 System Statistics ({datetime.now().strftime('%H:%M:%S')})")
+                print(f"\n System Statistics ({datetime.now().strftime('%H:%M:%S')})")
                 print("-" * 40)
                 print(f"Status: {stats['system']['status']}")
                 print(f"Messages Sent: {stats['summary']['total_messages_sent']}")
@@ -608,9 +608,9 @@ def main():
                 print("-" * 40)
     
     except KeyboardInterrupt:
-        print("\n🛑 Received interrupt signal")
+        print("\n Received interrupt signal")
     except Exception as e:
-        print(f"❌ Error running stream processing system: {e}")
+        print(f" Error running stream processing system: {e}")
         return 1
     finally:
         # Cleanup
